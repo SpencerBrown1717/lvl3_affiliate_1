@@ -10,14 +10,15 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     }
     
     body {
-      background: linear-gradient(135deg, #020617 0%, #0f172a 25%, #1e1b4b 50%, #0f172a 75%, #020617 100%);
+      background: linear-gradient(135deg, #0a0a0a 0%, #0f172a 25%, #1e1b4b 50%, #0f172a 75%, #0a0a0a 100%);
       min-height: 100vh;
       color: white;
       position: relative;
+      line-height: 1.6;
     }
     
     body::before {
@@ -27,8 +28,10 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
-                  radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.12) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.06) 0%, transparent 50%);
       pointer-events: none;
       z-index: -1;
     }
@@ -36,7 +39,7 @@
     .container {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 0 20px;
+      padding: 0 24px;
     }
     
     .gradient-text {
@@ -44,43 +47,77 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      background-size: 200% 200%;
+      animation: gradientShift 3s ease-in-out infinite;
+    }
+    
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
     }
     
     .glass-effect {
-      background: rgba(15, 23, 42, 0.6);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(148, 163, 184, 0.2);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(148, 163, 184, 0.15);
+      box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
     }
     
     .card {
-      background: rgba(15, 23, 42, 0.7);
-      border: 1px solid rgba(148, 163, 184, 0.15);
-      border-radius: 20px;
-      padding: 32px;
-      margin-bottom: 24px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(148, 163, 184, 0.12);
+      border-radius: 24px;
+      padding: 40px;
+      margin-bottom: 32px;
       transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      box-shadow: 
+        0 4px 20px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.3), transparent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
     }
     
     .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-      border-color: rgba(139, 92, 246, 0.3);
+      transform: translateY(-6px);
+      box-shadow: 
+        0 24px 48px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      border-color: rgba(139, 92, 246, 0.25);
+    }
+    
+    .card:hover::before {
+      opacity: 1;
     }
     
     .button {
       background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%);
       color: white;
       border: none;
-      padding: 18px 32px;
-      border-radius: 16px;
+      padding: 20px 36px;
+      border-radius: 18px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       font-size: 16px;
       position: relative;
       overflow: hidden;
+      box-shadow: 
+        0 4px 16px rgba(139, 92, 246, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
     
     .button::before {
@@ -90,8 +127,8 @@
       left: -100%;
       width: 100%;
       height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-      transition: left 0.5s;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+      transition: left 0.6s;
     }
     
     .button:hover::before {
@@ -99,9 +136,15 @@
     }
     
     .button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 30px rgba(139, 92, 246, 0.4);
+      transform: translateY(-3px);
+      box-shadow: 
+        0 16px 40px rgba(139, 92, 246, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
       background: linear-gradient(135deg, #6d28d9 0%, #7c3aed 100%);
+    }
+    
+    .button:active {
+      transform: translateY(-1px);
     }
     
     .button:disabled {
@@ -112,38 +155,45 @@
     
     .input {
       width: 100%;
-      padding: 18px;
-      background: rgba(2, 6, 23, 0.8);
-      border: 2px solid rgba(148, 163, 184, 0.2);
-      border-radius: 16px;
+      padding: 20px;
+      background: rgba(2, 6, 23, 0.9);
+      border: 2px solid rgba(148, 163, 184, 0.15);
+      border-radius: 18px;
       color: white;
       font-size: 16px;
       transition: all 0.3s ease;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
     }
     
     .input:focus {
       outline: none;
       border-color: #8b5cf6;
-      box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
-      background: rgba(2, 6, 23, 0.9);
+      box-shadow: 
+        0 0 0 4px rgba(139, 92, 246, 0.1),
+        inset 0 2px 4px rgba(0, 0, 0, 0.2);
+      background: rgba(2, 6, 23, 0.95);
     }
     
     .input::placeholder {
       color: #64748b;
+      font-style: italic;
     }
     
     .notification {
       position: fixed;
-      top: 24px;
-      right: 24px;
-      padding: 20px;
-      border-radius: 16px;
+      top: 32px;
+      right: 32px;
+      padding: 24px;
+      border-radius: 20px;
       color: white;
       font-weight: 500;
       z-index: 1000;
-      max-width: 400px;
-      animation: slideIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      max-width: 450px;
+      animation: slideIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      box-shadow: 
+        0 16px 40px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
     }
     
     .notification.success {
@@ -158,7 +208,7 @@
     
     @keyframes slideIn {
       from {
-        transform: translateX(100%) scale(0.8);
+        transform: translateX(100%) scale(0.9);
         opacity: 0;
       }
       to {
@@ -169,29 +219,35 @@
     
     .progress-bar {
       width: 100%;
-      height: 12px;
-      background: rgba(30, 41, 59, 0.5);
-      border-radius: 8px;
+      height: 16px;
+      background: rgba(30, 41, 59, 0.6);
+      border-radius: 10px;
       overflow: hidden;
-      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+      box-shadow: 
+        inset 0 2px 4px rgba(0, 0, 0, 0.3),
+        0 1px 0 rgba(255, 255, 255, 0.1);
     }
     
     .progress-fill {
       height: 100%;
       background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+      transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 10px;
+      box-shadow: 
+        0 2px 8px rgba(16, 185, 129, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
     
     .progress-fill.purple {
       background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+      box-shadow: 
+        0 2px 8px rgba(139, 92, 246, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
     
     .grid {
       display: grid;
-      gap: 24px;
+      gap: 32px;
     }
     
     .grid-1 { grid-template-columns: 1fr; }
@@ -201,36 +257,38 @@
     
     @media (max-width: 768px) {
       .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .container { padding: 0 16px; }
+      .card { padding: 28px; }
     }
     
     .text-center { text-align: center; }
     .text-left { text-align: left; }
     .text-right { text-align: right; }
     
-    .mb-4 { margin-bottom: 16px; }
-    .mb-6 { margin-bottom: 24px; }
-    .mb-8 { margin-bottom: 32px; }
-    .mb-12 { margin-bottom: 48px; }
+    .mb-4 { margin-bottom: 20px; }
+    .mb-6 { margin-bottom: 32px; }
+    .mb-8 { margin-bottom: 40px; }
+    .mb-12 { margin-bottom: 60px; }
     
-    .mt-4 { margin-top: 16px; }
-    .mt-6 { margin-top: 24px; }
-    .mt-8 { margin-top: 32px; }
+    .mt-4 { margin-top: 20px; }
+    .mt-6 { margin-top: 32px; }
+    .mt-8 { margin-top: 40px; }
     
-    .py-6 { padding-top: 24px; padding-bottom: 24px; }
-    .py-8 { padding-top: 32px; padding-bottom: 32px; }
-    .py-16 { padding-top: 64px; padding-bottom: 64px; }
+    .py-6 { padding-top: 32px; padding-bottom: 32px; }
+    .py-8 { padding-top: 40px; padding-bottom: 40px; }
+    .py-16 { padding-top: 80px; padding-bottom: 80px; }
     
-    .px-4 { padding-left: 16px; padding-right: 16px; }
-    .px-6 { padding-left: 24px; padding-right: 24px; }
+    .px-4 { padding-left: 20px; padding-right: 20px; }
+    .px-6 { padding-left: 32px; padding-right: 32px; }
     
     .text-sm { font-size: 14px; }
     .text-base { font-size: 16px; }
     .text-lg { font-size: 18px; }
-    .text-xl { font-size: 20px; }
-    .text-2xl { font-size: 24px; }
-    .text-3xl { font-size: 30px; }
-    .text-4xl { font-size: 36px; }
-    .text-5xl { font-size: 48px; }
+    .text-xl { font-size: 22px; }
+    .text-2xl { font-size: 28px; }
+    .text-3xl { font-size: 36px; }
+    .text-4xl { font-size: 44px; }
+    .text-5xl { font-size: 56px; }
     
     .font-medium { font-weight: 500; }
     .font-semibold { font-weight: 600; }
@@ -249,31 +307,31 @@
     .items-center { align-items: center; }
     .justify-center { justify-content: center; }
     .justify-between { justify-content: space-between; }
-    .gap-2 { gap: 8px; }
-    .gap-3 { gap: 12px; }
-    .gap-4 { gap: 16px; }
-    .gap-6 { gap: 24px; }
-    .gap-8 { gap: 32px; }
+    .gap-2 { gap: 12px; }
+    .gap-3 { gap: 16px; }
+    .gap-4 { gap: 20px; }
+    .gap-6 { gap: 32px; }
+    .gap-8 { gap: 40px; }
     
     .hidden { display: none; }
     
     .logo {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 6px;
       animation: logoFloat 4s ease-in-out infinite;
     }
     
     @keyframes logoFloat {
       0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-6px); }
+      50% { transform: translateY(-8px); }
     }
     
     .logo-bar {
-      width: 36px;
-      height: 6px;
-      border-radius: 3px;
-      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+      width: 40px;
+      height: 8px;
+      border-radius: 4px;
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
     }
     
     .logo-bar-1 { background: linear-gradient(135deg, #c084fc 0%, #a855f7 100%); }
@@ -295,17 +353,17 @@
     
     @keyframes pulse {
       0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.8; transform: scale(1.05); }
+      50% { opacity: 0.8; transform: scale(1.08); }
     }
     
     .fade-in {
-      animation: fadeIn 0.8s ease-out;
+      animation: fadeIn 1s ease-out;
     }
     
     @keyframes fadeIn {
       from {
         opacity: 0;
-        transform: translateY(30px);
+        transform: translateY(40px);
       }
       to {
         opacity: 1;
@@ -314,33 +372,170 @@
     }
     
     .stat-card {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.08);
+      border-radius: 20px;
+      padding: 32px;
+      transition: all 0.3s ease;
+      box-shadow: 
+        0 4px 16px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(139, 92, 246, 0.25);
+      box-shadow: 
+        0 12px 32px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+    
+    .accent-border {
+      border-left: 5px solid #8b5cf6;
+    }
+    
+    .success-border {
+      border-left: 5px solid #10b981;
+    }
+    
+    .warning-border {
+      border-left: 5px solid #f59e0b;
+    }
+    
+    .info-border {
+      border-left: 5px solid #3b82f6;
+    }
+    
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      padding: 20px;
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 16px;
+      border: 1px solid rgba(148, 163, 184, 0.08);
+      transition: all 0.3s ease;
+    }
+    
+    .feature-item:hover {
       background: rgba(15, 23, 42, 0.8);
+      border-color: rgba(139, 92, 246, 0.2);
+      transform: translateX(4px);
+    }
+    
+    .feature-dot {
+      width: 16px;
+      height: 16px;
+      background: linear-gradient(135deg, #c084fc 0%, #a855f7 100%);
+      border-radius: 50%;
+      margin-top: 6px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+    }
+    
+    .commission-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px;
+      background: rgba(15, 23, 42, 0.7);
+      border-radius: 18px;
+      border: 1px solid rgba(148, 163, 184, 0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .commission-card:hover {
+      background: rgba(15, 23, 42, 0.9);
+      border-color: rgba(139, 92, 246, 0.2);
+      transform: translateY(-2px);
+    }
+    
+    .commission-card.highlight {
+      background: linear-gradient(135deg, rgba(5, 150, 105, 0.25) 0%, rgba(16, 185, 129, 0.25) 100%);
+      border-color: rgba(16, 185, 129, 0.4);
+    }
+    
+    .how-it-works {
+      background: rgba(147, 51, 234, 0.18);
+      border-color: rgba(147, 51, 234, 0.35);
+      backdrop-filter: blur(20px);
+    }
+    
+    .template-card {
+      background: rgba(15, 23, 42, 0.7);
       border: 1px solid rgba(148, 163, 184, 0.1);
       border-radius: 16px;
       padding: 24px;
       transition: all 0.3s ease;
     }
     
-    .stat-card:hover {
+    .template-card:hover {
+      background: rgba(15, 23, 42, 0.9);
+      border-color: rgba(139, 92, 246, 0.25);
       transform: translateY(-2px);
-      border-color: rgba(139, 92, 246, 0.3);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
     }
     
-    .accent-border {
-      border-left: 4px solid #8b5cf6;
+    .template-card.purple {
+      background: rgba(147, 51, 234, 0.18);
+      border-color: rgba(147, 51, 234, 0.35);
     }
     
-    .success-border {
-      border-left: 4px solid #10b981;
+    .template-card.blue {
+      background: rgba(59, 130, 246, 0.18);
+      border-color: rgba(59, 130, 246, 0.35);
     }
     
-    .warning-border {
-      border-left: 4px solid #f59e0b;
+    .activity-item {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+      border-radius: 16px;
+      padding: 20px;
+      transition: all 0.3s ease;
     }
     
-    .info-border {
-      border-left: 4px solid #3b82f6;
+    .activity-item:hover {
+      background: rgba(15, 23, 42, 0.9);
+      border-color: rgba(139, 92, 246, 0.25);
+      transform: translateX(4px);
+    }
+    
+    .activity-item.blue {
+      background: rgba(59, 130, 246, 0.18);
+      border-color: rgba(59, 130, 246, 0.35);
+    }
+    
+    .activity-item.amber {
+      background: rgba(245, 158, 11, 0.18);
+      border-color: rgba(245, 158, 11, 0.35);
+    }
+    
+    .activity-item.green {
+      background: rgba(5, 150, 105, 0.18);
+      border-color: rgba(5, 150, 105, 0.35);
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #6b7280;
+    }
+    
+    .empty-state .icon {
+      font-size: 80px;
+      opacity: 0.2;
+      margin-bottom: 24px;
+      display: block;
+    }
+    
+    .header-badge {
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(148, 163, 184, 0.15);
+      border-radius: 20px;
+      padding: 12px 28px;
+      box-shadow: 
+        0 4px 16px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
     }
   </style>
 </head>
@@ -390,9 +585,9 @@
       
       container.innerHTML = notifications.map(n => `
         <div class="notification ${n.type}">
-          <div class="flex items-center gap-3">
-            <span style="font-size: 18px;">${n.type === 'success' ? '✅' : '❌'}</span>
-            <span style="font-weight: 600;">${n.message}</span>
+          <div class="flex items-center gap-4">
+            <span style="font-size: 20px;">${n.type === 'success' ? '✅' : '❌'}</span>
+            <span style="font-weight: 600; font-size: 15px;">${n.message}</span>
           </div>
         </div>
       `).join('');
@@ -411,7 +606,7 @@
       
       // Show loading state
       const button = document.querySelector('button[onclick="handleSetup(event)"]');
-      button.innerHTML = '<div class="flex items-center gap-3"><div class="spinner" style="width: 20px; height: 20px; border: 2px solid white; border-top: transparent; border-radius: 50%;"></div><span>Processing...</span></div>';
+      button.innerHTML = '<div class="flex items-center gap-4"><div class="spinner" style="width: 22px; height: 22px; border: 2px solid white; border-top: transparent; border-radius: 50%;"></div><span>Processing...</span></div>';
       button.disabled = true;
       
       setTimeout(() => {
@@ -464,86 +659,86 @@
       return `
         <div class="py-16 fade-in">
           <div class="container">
-            <div style="max-width: 600px; margin: 0 auto;">
+            <div style="max-width: 700px; margin: 0 auto;">
               <!-- header -->
               <div class="text-center mb-12">
-                <div class="flex items-center justify-center mb-8">
+                <div class="flex items-center justify-center mb-10">
                   <div class="logo">
                     <div class="logo-bar logo-bar-1"></div>
                     <div class="logo-bar logo-bar-2"></div>
                     <div class="logo-bar logo-bar-3"></div>
                   </div>
-                  <h1 class="text-4xl font-bold text-white ml-4">LVL3.ai</h1>
+                  <h1 class="text-5xl font-bold text-white ml-6">LVL3.ai</h1>
                 </div>
-                <div class="glass-effect" style="display: inline-block; padding: 12px 32px; border-radius: 16px;">
-                  <span class="text-gray-300 text-sm font-medium">Sales Team Portal</span>
+                <div class="header-badge">
+                  <span class="text-gray-300 text-base font-medium">Sales Team Portal</span>
                 </div>
               </div>
 
               <!-- card -->
               <div class="card">
-                <div class="text-center mb-10">
-                  <h2 class="text-5xl font-bold gradient-text mb-6">
+                <div class="text-center mb-12">
+                  <h2 class="text-5xl font-bold gradient-text mb-8 leading-tight">
                     Sales Incentive<br/>Program
                   </h2>
-                  <p class="text-gray-300 text-xl">
+                  <p class="text-gray-300 text-xl leading-relaxed">
                     Get your personal sales link and earn up to
-                    <span class="text-green-400 font-bold text-2xl"> $${maxEarnings.toLocaleString()}</span>
+                    <span class="text-green-400 font-bold text-3xl"> $${maxEarnings.toLocaleString()}</span>
                   </p>
                 </div>
 
                 <!-- details -->
-                <div class="card mb-8 accent-border">
-                  <h3 class="text-white font-semibold mb-6 text-lg flex items-center">
+                <div class="card mb-10 accent-border">
+                  <h3 class="text-white font-semibold mb-8 text-xl flex items-center">
                     🎯 Your Commission Structure
                   </h3>
-                  <div style="display: flex; flex-direction: column; gap: 16px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px; background: rgba(15, 23, 42, 0.6); border-radius: 16px; border: 1px solid rgba(148, 163, 184, 0.1);">
-                      <span class="text-gray-300 font-medium">Per qualified signup</span>
-                      <span class="text-green-400 font-bold text-xl">$${payoutPerSignup}</span>
+                  <div style="display: flex; flex-direction: column; gap: 20px;">
+                    <div class="commission-card">
+                      <span class="text-gray-300 font-medium text-lg">Per qualified signup</span>
+                      <span class="text-green-400 font-bold text-2xl">$${payoutPerSignup}</span>
                     </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px; background: rgba(15, 23, 42, 0.6); border-radius: 16px; border: 1px solid rgba(148, 163, 184, 0.1);">
-                      <span class="text-gray-300 font-medium">Maximum signups</span>
-                      <span class="text-purple-400 font-bold text-xl">${maxSignups.toLocaleString()}</span>
+                    <div class="commission-card">
+                      <span class="text-gray-300 font-medium text-lg">Maximum signups</span>
+                      <span class="text-purple-400 font-bold text-2xl">${maxSignups.toLocaleString()}</span>
                     </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px; background: linear-gradient(135deg, rgba(5, 150, 105, 0.2) 0%, rgba(16, 185, 129, 0.2) 100%); border-radius: 16px; border: 1px solid rgba(16, 185, 129, 0.3);">
-                      <span class="text-white font-semibold text-lg">Maximum earnings</span>
-                      <span class="text-green-400 font-bold text-2xl">$${maxEarnings.toLocaleString()}</span>
+                    <div class="commission-card highlight">
+                      <span class="text-white font-semibold text-xl">Maximum earnings</span>
+                      <span class="text-green-400 font-bold text-3xl">$${maxEarnings.toLocaleString()}</span>
                     </div>
                   </div>
                 </div>
 
                 <!-- how it works -->
-                <div class="card mb-8" style="background: rgba(147, 51, 234, 0.15); border-color: rgba(147, 51, 234, 0.3);">
-                  <h3 class="text-white font-semibold mb-6 text-lg">How It Works:</h3>
-                  <div style="display: flex; flex-direction: column; gap: 16px; color: #d1d5db;">
-                    <div style="display: flex; align-items: flex-start;">
-                      <div style="width: 12px; height: 12px; background: linear-gradient(135deg, #c084fc 0%, #a855f7 100%); border-radius: 50%; margin-top: 8px; margin-right: 16px; flex-shrink: 0; box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);"></div>
-                      <span class="text-base">Get your unique sales link below</span>
+                <div class="card mb-10 how-it-works">
+                  <h3 class="text-white font-semibold mb-8 text-xl">How It Works:</h3>
+                  <div style="display: flex; flex-direction: column; gap: 20px;">
+                    <div class="feature-item">
+                      <div class="feature-dot"></div>
+                      <span class="text-base text-gray-200">Get your unique sales link below</span>
                     </div>
-                    <div style="display: flex; align-items: flex-start;">
-                      <div style="width: 12px; height: 12px; background: linear-gradient(135deg, #c084fc 0%, #a855f7 100%); border-radius: 50%; margin-top: 8px; margin-right: 16px; flex-shrink: 0; box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);"></div>
-                      <span class="text-base">Share with prospects via email, social, or direct outreach</span>
+                    <div class="feature-item">
+                      <div class="feature-dot"></div>
+                      <span class="text-base text-gray-200">Share with prospects via email, social, or direct outreach</span>
                     </div>
-                    <div style="display: flex; align-items: flex-start;">
-                      <div style="width: 12px; height: 12px; background: linear-gradient(135deg, #c084fc 0%, #a855f7 100%); border-radius: 50%; margin-top: 8px; margin-right: 16px; flex-shrink: 0; box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);"></div>
-                      <span class="text-base">Prospects sign up for LVL3.ai early access</span>
+                    <div class="feature-item">
+                      <div class="feature-dot"></div>
+                      <span class="text-base text-gray-200">Prospects sign up for LVL3.ai early access</span>
                     </div>
-                    <div style="display: flex; align-items: flex-start;">
-                      <div style="width: 12px; height: 12px; background: linear-gradient(135deg, #c084fc 0%, #a855f7 100%); border-radius: 50%; margin-top: 8px; margin-right: 16px; flex-shrink: 0; box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);"></div>
-                      <span class="text-base">Earn $5 for each user who stays active for 3+ months</span>
+                    <div class="feature-item">
+                      <div class="feature-dot"></div>
+                      <span class="text-base text-gray-200">Earn $5 for each user who stays active for 3+ months</span>
                     </div>
                   </div>
                 </div>
 
                 <!-- email form -->
-                <div style="display: flex; flex-direction: column; gap: 24px;">
+                <div style="display: flex; flex-direction: column; gap: 32px;">
                   <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-3">Sales Team Email</label>
+                    <label class="block text-base font-medium text-gray-300 mb-4">Sales Team Email</label>
                     <input
                       id="email-input"
                       type="email"
-                      placeholder="Enter your LVL3.ai email"
+                      placeholder="Enter your LVL3.ai email address"
                       class="input"
                       onkeypress="if(event.key==='Enter') handleSetup(event)"
                     />
@@ -569,8 +764,8 @@
 
       return `
         <!-- header -->
-        <div class="glass-effect" style="border-bottom: 1px solid rgba(148, 163, 184, 0.2);">
-          <div class="container py-6">
+        <div class="glass-effect" style="border-bottom: 1px solid rgba(148, 163, 184, 0.15);">
+          <div class="container py-8">
             <div class="flex items-center justify-between">
               <div class="flex items-center">
                 <div class="logo">
@@ -578,44 +773,44 @@
                   <div class="logo-bar logo-bar-2"></div>
                   <div class="logo-bar logo-bar-3"></div>
                 </div>
-                <div style="margin-left: 16px;">
-                  <h1 class="text-2xl font-bold text-white">LVL3.ai Sales Portal</h1>
-                  <p class="text-sm text-gray-400">Sales Team Dashboard</p>
+                <div style="margin-left: 20px;">
+                  <h1 class="text-3xl font-bold text-white">LVL3.ai Sales Portal</h1>
+                  <p class="text-base text-gray-400">Sales Team Dashboard</p>
                 </div>
               </div>
-              <div class="glass-effect" style="padding: 16px 32px; border-radius: 16px;">
-                <span class="text-sm text-gray-300 font-medium">Welcome, ${salesPersonName}</span>
+              <div class="header-badge">
+                <span class="text-base text-gray-300 font-medium">Welcome, ${salesPersonName}</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="container py-8">
+        <div class="container py-10">
           <!-- earnings overview -->
-          <div class="card" style="background: linear-gradient(135deg, rgba(5, 150, 105, 0.15) 0%, rgba(16, 185, 129, 0.15) 50%, rgba(5, 150, 105, 0.15) 100%); border-color: rgba(16, 185, 129, 0.3);">
-            <div class="flex items-center justify-between mb-6">
-              <h2 class="text-3xl font-bold text-white">Earnings Progress</h2>
-              <span class="text-3xl pulse">🏆</span>
+          <div class="card" style="background: linear-gradient(135deg, rgba(5, 150, 105, 0.18) 0%, rgba(16, 185, 129, 0.18) 50%, rgba(5, 150, 105, 0.18) 100%); border-color: rgba(16, 185, 129, 0.35);">
+            <div class="flex items-center justify-between mb-8">
+              <h2 class="text-4xl font-bold text-white">Earnings Progress</h2>
+              <span class="text-4xl pulse">🏆</span>
             </div>
-            <div class="grid grid-3 gap-8">
+            <div class="grid grid-3 gap-10">
               <div class="text-center">
-                <p class="text-4xl font-bold text-green-400 mb-2">$${stats.totalEarnings.toLocaleString()}</p>
-                <p class="text-gray-400 font-medium">Current Earnings</p>
-                <div class="progress-bar mt-4">
+                <p class="text-5xl font-bold text-green-400 mb-4">$${stats.totalEarnings.toLocaleString()}</p>
+                <p class="text-gray-400 font-medium text-lg">Current Earnings</p>
+                <div class="progress-bar mt-6">
                   <div class="progress-fill" style="width: ${earningsPct}%"></div>
                 </div>
               </div>
               <div class="text-center">
-                <p class="text-4xl font-bold text-purple-400 mb-2">${stats.confirmedSignups}</p>
-                <p class="text-gray-400 font-medium">Confirmed Signups</p>
-                <div class="progress-bar mt-4">
+                <p class="text-5xl font-bold text-purple-400 mb-4">${stats.confirmedSignups}</p>
+                <p class="text-gray-400 font-medium text-lg">Confirmed Signups</p>
+                <div class="progress-bar mt-6">
                   <div class="progress-fill purple" style="width: ${progressPct}%"></div>
                 </div>
               </div>
               <div class="text-center">
-                <p class="text-4xl font-bold text-white mb-2">${stats.remainingSlots.toLocaleString()}</p>
-                <p class="text-gray-400 font-medium">Remaining Slots</p>
-                <p class="text-sm text-green-400 mt-2 font-medium">
+                <p class="text-5xl font-bold text-white mb-4">${stats.remainingSlots.toLocaleString()}</p>
+                <p class="text-gray-400 font-medium text-lg">Remaining Slots</p>
+                <p class="text-base text-green-400 mt-4 font-medium">
                   Worth $${(stats.remainingSlots * payoutPerSignup).toLocaleString()}
                 </p>
               </div>
@@ -623,118 +818,118 @@
           </div>
 
           <!-- stats grid -->
-          <div class="grid grid-4 gap-6 mb-8">
+          <div class="grid grid-4 gap-8 mb-10">
             <div class="stat-card info-border">
               <div class="flex items-center justify-between">
                 <div>
-                  <p class="text-sm text-gray-400 font-medium">Link Shares</p>
-                  <p class="text-3xl font-bold text-blue-400">${stats.totalShares.toLocaleString()}</p>
+                  <p class="text-base text-gray-400 font-medium">Link Shares</p>
+                  <p class="text-4xl font-bold text-blue-400">${stats.totalShares.toLocaleString()}</p>
                 </div>
-                <span class="text-3xl">🔗</span>
+                <span class="text-4xl">🔗</span>
               </div>
             </div>
             <div class="stat-card warning-border">
               <div class="flex items-center justify-between">
                 <div>
-                  <p class="text-sm text-gray-400 font-medium">Pending (3mo)</p>
-                  <p class="text-3xl font-bold text-amber-400">${stats.pendingSignups}</p>
+                  <p class="text-base text-gray-400 font-medium">Pending (3mo)</p>
+                  <p class="text-4xl font-bold text-amber-400">${stats.pendingSignups}</p>
                 </div>
-                <span class="text-3xl">⏰</span>
+                <span class="text-4xl">⏰</span>
               </div>
             </div>
             <div class="stat-card success-border">
               <div class="flex items-center justify-between">
                 <div>
-                  <p class="text-sm text-gray-400 font-medium">Conversion Rate</p>
-                  <p class="text-3xl font-bold text-green-400">${
+                  <p class="text-base text-gray-400 font-medium">Conversion Rate</p>
+                  <p class="text-4xl font-bold text-green-400">${
                     stats.totalShares > 0
                       ? Math.round(((stats.confirmedSignups + stats.pendingSignups) / stats.totalShares) * 100)
                       : 0
                   }%</p>
                 </div>
-                <span class="text-3xl">📈</span>
+                <span class="text-4xl">📈</span>
               </div>
             </div>
             <div class="stat-card accent-border">
               <div class="flex items-center justify-between">
                 <div>
-                  <p class="text-sm text-gray-400 font-medium">Potential Value</p>
-                  <p class="text-3xl font-bold text-purple-400">$${maxEarnings.toLocaleString()}</p>
+                  <p class="text-base text-gray-400 font-medium">Potential Value</p>
+                  <p class="text-4xl font-bold text-purple-400">$${maxEarnings.toLocaleString()}</p>
                 </div>
-                <span class="text-3xl">🎯</span>
+                <span class="text-4xl">🎯</span>
               </div>
             </div>
           </div>
 
           <!-- main two-col -->
-          <div class="grid grid-2 gap-8">
+          <div class="grid grid-2 gap-10">
             <!-- left — link / templates -->
             <div class="card">
-              <h2 class="text-2xl font-semibold text-white mb-6 flex items-center">
+              <h2 class="text-3xl font-semibold text-white mb-8 flex items-center">
                 🔗 Your Personal Sales Link
               </h2>
-              <div class="flex gap-3 mb-6">
+              <div class="flex gap-4 mb-8">
                 <input
                   type="text"
                   value="${salesLink}"
                   readonly
                   class="input"
-                  style="font-family: monospace;"
+                  style="font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace; font-size: 14px;"
                 />
                 <button
                   onclick="copyLink()"
                   class="button"
-                  style="padding: 18px;"
+                  style="padding: 20px;"
                 >
                   📋
                 </button>
               </div>
-              <div style="display: flex; flex-direction: column; gap: 16px;">
-                <div class="card" style="background: rgba(147, 51, 234, 0.15); border-color: rgba(147, 51, 234, 0.3);">
-                  <p class="text-purple-300 font-medium mb-2">📧 Email Template:</p>
-                  <p class="text-gray-300">"Get early access to LVL3.ai – revolutionary AI that thinks faster than you can ask: ${salesLink}"</p>
+              <div style="display: flex; flex-direction: column; gap: 20px;">
+                <div class="template-card purple">
+                  <p class="text-purple-300 font-medium mb-3 text-lg">📧 Email Template:</p>
+                  <p class="text-gray-200 leading-relaxed">"Get early access to LVL3.ai – revolutionary AI that thinks faster than you can ask: ${salesLink}"</p>
                 </div>
-                <div class="card" style="background: rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.3);">
-                  <p class="text-blue-300 font-medium mb-2">💬 Social Share:</p>
-                  <p class="text-gray-300">"Exclusive early access to next-gen AI technology. Limited spots available: ${salesLink}"</p>
+                <div class="template-card blue">
+                  <p class="text-blue-300 font-medium mb-3 text-lg">💬 Social Share:</p>
+                  <p class="text-gray-200 leading-relaxed">"Exclusive early access to next-gen AI technology. Limited spots available: ${salesLink}"</p>
                 </div>
               </div>
             </div>
 
             <!-- right — activity -->
             <div class="card">
-              <h2 class="text-2xl font-semibold text-white mb-6">Sales Activity</h2>
-              <div style="display: flex; flex-direction: column; gap: 16px;">
+              <h2 class="text-3xl font-semibold text-white mb-8">Sales Activity</h2>
+              <div style="display: flex; flex-direction: column; gap: 20px;">
                 ${stats.totalShares ? `
-                  <div class="card" style="background: rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.3);">
-                    <div class="flex items-center gap-3">
-                      <span class="text-blue-400 text-xl">🔗</span>
-                      <span class="text-gray-300 font-medium">Link shared ${stats.totalShares.toLocaleString()} times</span>
+                  <div class="activity-item blue">
+                    <div class="flex items-center gap-4">
+                      <span class="text-blue-400 text-2xl">🔗</span>
+                      <span class="text-gray-200 font-medium text-lg">Link shared ${stats.totalShares.toLocaleString()} times</span>
                     </div>
                   </div>
                 ` : ''}
                 ${stats.pendingSignups ? `
-                  <div class="card" style="background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.3);">
-                    <div class="flex items-center gap-3">
-                      <span class="text-amber-400 text-xl">⏰</span>
-                      <span class="text-gray-300 font-medium">${stats.pendingSignups} signup${stats.pendingSignups !== 1 ? 's' : ''} pending 3-month validation</span>
+                  <div class="activity-item amber">
+                    <div class="flex items-center gap-4">
+                      <span class="text-amber-400 text-2xl">⏰</span>
+                      <span class="text-gray-200 font-medium text-lg">${stats.pendingSignups} signup${stats.pendingSignups !== 1 ? 's' : ''} pending 3-month validation</span>
                     </div>
                   </div>
                 ` : ''}
                 ${stats.confirmedSignups ? `
-                  <div class="card" style="background: rgba(5, 150, 105, 0.15); border-color: rgba(5, 150, 105, 0.3);">
-                    <div class="flex items-center gap-3">
-                      <span class="text-green-400 text-xl">💰</span>
-                      <span class="text-gray-300 font-medium">$${stats.totalEarnings.toLocaleString()} earned from ${stats.confirmedSignups} confirmed signup${stats.confirmedSignups !== 1 ? 's' : ''}</span>
+                  <div class="activity-item green">
+                    <div class="flex items-center gap-4">
+                      <span class="text-green-400 text-2xl">💰</span>
+                      <span class="text-gray-200 font-medium text-lg">$${stats.totalEarnings.toLocaleString()} earned from ${stats.confirmedSignups} confirmed signup${stats.confirmedSignups !== 1 ? 's' : ''}</span>
                     </div>
                   </div>
                 ` : ''}
 
                 ${!stats.totalShares ? `
-                  <div class="text-center py-12 text-gray-500">
-                    <span class="text-6xl opacity-30 mb-4 block">🎯</span>
-                    <p class="text-gray-400 text-lg font-medium mb-2">Ready to start earning?</p>
-                    <p class="text-gray-500">Copy your sales link and start sharing!</p>
+                  <div class="empty-state">
+                    <span class="icon">🎯</span>
+                    <p class="text-gray-400 text-xl font-medium mb-3">Ready to start earning?</p>
+                    <p class="text-gray-500 text-lg">Copy your sales link and start sharing!</p>
                   </div>
                 ` : ''}
               </div>
@@ -742,16 +937,16 @@
 
             <!-- bottom — progress to goal -->
             <div class="card" style="grid-column: 1 / -1;">
-              <div class="flex items-center justify-between mb-6">
-                <h3 class="text-xl font-semibold text-white">Progress to Maximum Earnings</h3>
-                <span class="text-3xl font-bold text-green-400">
+              <div class="flex items-center justify-between mb-8">
+                <h3 class="text-2xl font-semibold text-white">Progress to Maximum Earnings</h3>
+                <span class="text-4xl font-bold text-green-400">
                   $${stats.totalEarnings.toLocaleString()} / $${maxEarnings.toLocaleString()}
                 </span>
               </div>
-              <div class="progress-bar" style="height: 20px; margin-bottom: 16px;">
+              <div class="progress-bar" style="height: 24px; margin-bottom: 20px;">
                 <div class="progress-fill" style="width: ${earningsPct}%"></div>
               </div>
-              <div class="flex justify-between text-sm text-gray-400 font-medium">
+              <div class="flex justify-between text-base text-gray-400 font-medium">
                 <span>${stats.confirmedSignups + stats.pendingSignups} / ${maxSignups.toLocaleString()} signups</span>
                 <span>${Math.round(earningsPct)}% complete</span>
               </div>
