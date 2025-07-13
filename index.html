@@ -11,6 +11,8 @@
     
     <!-- Babel with fallback -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Add Babel React preset for JSX support -->
+    <script src="https://unpkg.com/@babel/preset-react@7.18.6/lib/index.min.js"></script>
     
     <!-- Lucide icons with fallback -->
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
@@ -116,7 +118,7 @@
         </div>
     </div>
 
-    <script type="text/babel">
+    <script type="text/babel" data-presets="react">
         // Wait for all dependencies to load
         function waitForDependencies() {
             return new Promise((resolve) => {
@@ -135,15 +137,22 @@
         async function initApp() {
             try {
                 await waitForDependencies();
-                
                 const { useState, useEffect } = React;
-                
-                // Fallback for lucide icons if not available
+                // Defensive Lucide icon handling
                 const lucide = window.lucide || {};
-                const { 
-                    Mail, Copy, DollarSign, Users, Clock, CheckCircle, AlertCircle, 
-                    Zap, Link2, Target, Trophy, TrendingUp 
-                } = lucide;
+                const getIcon = (name) => (lucide[name] ? lucide[name] : null);
+                const Mail = getIcon('Mail');
+                const Copy = getIcon('Copy');
+                const DollarSign = getIcon('DollarSign');
+                const Users = getIcon('Users');
+                const Clock = getIcon('Clock');
+                const CheckCircle = getIcon('CheckCircle');
+                const AlertCircle = getIcon('AlertCircle');
+                const Zap = getIcon('Zap');
+                const Link2 = getIcon('Link2');
+                const Target = getIcon('Target');
+                const Trophy = getIcon('Trophy');
+                const TrendingUp = getIcon('TrendingUp');
 
                 const LVL3SalesPortal = () => {
                     const [currentStep, setCurrentStep] = useState('signup');
@@ -172,26 +181,16 @@
                     // Handle setup
                     const handleSetup = async (e) => {
                         e.preventDefault?.();
-                        
                         if (!email || !email.includes('@')) {
-                            setNotifications([{
-                                type: 'error',
-                                message: 'Please enter a valid email address.'
-                            }]);
+                            setNotifications([{ type: 'error', message: 'Please enter a valid email address.' }]);
                             return;
                         }
-
                         try {
                             const link = generateSalesLink(email);
                             setSalesLink(link);
                             setCurrentStep('dashboard');
                             setSalesPersonName(email.split('@')[0]);
-                            
-                            setNotifications([{
-                                type: 'success',
-                                message: 'Sales portal activated. Your link is ready to share.'
-                            }]);
-
+                            setNotifications([{ type: 'success', message: 'Sales portal activated. Your link is ready to share.' }]);
                             // Simulate some demo data
                             const confirmed = Math.floor(Math.random() * 12);
                             const pending = Math.floor(Math.random() * 8);
@@ -202,23 +201,39 @@
                                 totalEarnings: confirmed * payoutPerSignup,
                                 remainingSlots: maxSignups - confirmed - pending
                             });
-
                         } catch (error) {
-                            setNotifications([{
-                                type: 'error',
-                                message: 'Setup failed. Please try again.'
-                            }]);
+                            setNotifications([{ type: 'error', message: 'Setup failed. Please try again.' }]);
                         }
                     };
 
-                    // Copy link to clipboard
+                    // Copy link to clipboard with fallback
                     const copyLink = () => {
-                        navigator.clipboard.writeText(salesLink);
-                        setNotifications([{
-                            type: 'success',
-                            message: 'Sales link copied to clipboard!'
-                        }]);
+                        if (navigator.clipboard && window.isSecureContext) {
+                            navigator.clipboard.writeText(salesLink).then(() => {
+                                setNotifications([{ type: 'success', message: 'Sales link copied to clipboard!' }]);
+                            }, () => {
+                                fallbackCopyTextToClipboard(salesLink);
+                            });
+                        } else {
+                            fallbackCopyTextToClipboard(salesLink);
+                        }
                     };
+                    // Fallback for clipboard
+                    function fallbackCopyTextToClipboard(text) {
+                        const textArea = document.createElement('textarea');
+                        textArea.value = text;
+                        textArea.style.position = 'fixed';
+                        document.body.appendChild(textArea);
+                        textArea.focus();
+                        textArea.select();
+                        try {
+                            document.execCommand('copy');
+                            setNotifications([{ type: 'success', message: 'Sales link copied to clipboard!' }]);
+                        } catch (err) {
+                            setNotifications([{ type: 'error', message: 'Failed to copy link.' }]);
+                        }
+                        document.body.removeChild(textArea);
+                    }
 
                     // Clear notifications after 3 seconds
                     useEffect(() => {
@@ -574,14 +589,15 @@
 
                 // Render the app
                 ReactDOM.render(<LVL3SalesPortal />, document.getElementById('root'));
-                
             } catch (error) {
+                // Debug output for errors
                 console.error('Failed to initialize app:', error);
                 document.getElementById('root').innerHTML = `
                     <div class="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black flex items-center justify-center">
                         <div class="text-center">
                             <h1 class="text-2xl font-bold text-white mb-4">LVL3.ai Sales Portal</h1>
                             <p class="text-gray-300 mb-4">Failed to load the application.</p>
+                            <pre style="color:#fff;background:#222;padding:1em;border-radius:8px;max-width:90vw;overflow-x:auto;">${error && error.message ? error.message : error}</pre>
                             <button onclick="location.reload()" class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700">
                                 Reload Page
                             </button>
@@ -590,7 +606,6 @@
                 `;
             }
         }
-
         // Start the app when the page loads
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', initApp);
