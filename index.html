@@ -9,34 +9,112 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    
+    * {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    
     .gradient-text {
-      background: linear-gradient(to right, #a855f7, #8b5cf6);
+      background: linear-gradient(135deg, #a855f7 0%, #8b5cf6 50%, #7c3aed 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
     
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .glass-effect {
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    
     .notification {
-      animation: slideIn 0.3s ease-out;
+      animation: slideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     }
     
     @keyframes slideIn {
       from {
-        transform: translateX(100%);
+        transform: translateX(100%) scale(0.8);
         opacity: 0;
       }
       to {
-        transform: translateX(0);
+        transform: translateX(0) scale(1);
         opacity: 1;
       }
     }
     
     .progress-bar {
-      transition: width 0.5s ease-in-out;
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .card-hover {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .card-hover:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+    
+    .button-hover {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .button-hover:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+    }
+    
+    .input-focus:focus {
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    }
+    
+    .pulse-animation {
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.7;
+      }
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.6s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .logo-animation {
+      animation: logoFloat 3s ease-in-out infinite;
+    }
+    
+    @keyframes logoFloat {
+      0%, 100% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-5px);
+      }
     }
   </style>
 </head>
-<body class="bg-black">
+<body class="bg-black min-h-screen">
   <div id="root"></div>
 
   <script>
@@ -66,14 +144,14 @@
     }
 
     function showNotification(type, message) {
-      const notification = { type, message };
+      const notification = { type, message, id: Date.now() };
       notifications.push(notification);
       renderNotifications();
       
       setTimeout(() => {
-        notifications = notifications.filter(n => n !== notification);
+        notifications = notifications.filter(n => n.id !== notification.id);
         renderNotifications();
-      }, 3000);
+      }, 4000);
     }
 
     function renderNotifications() {
@@ -81,14 +159,18 @@
       if (!container) return;
       
       container.innerHTML = notifications.map(n => `
-        <div class="notification fixed top-4 right-4 p-4 rounded-xl shadow-2xl z-50 ${
+        <div class="notification fixed top-6 right-6 p-4 rounded-2xl shadow-2xl z-50 max-w-sm ${
           n.type === 'success'
-            ? 'bg-gradient-to-r from-purple-600 to-violet-600 text-white'
-            : 'bg-gradient-to-r from-red-600 to-pink-600 text-white'
+            ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white border border-emerald-500/30'
+            : 'bg-gradient-to-r from-red-600 to-pink-600 text-white border border-red-500/30'
         }">
-          <div class="flex items-center gap-2">
-            ${n.type === 'success' ? '✅' : '❌'}
-            ${n.message}
+          <div class="flex items-center gap-3">
+            <div class="flex-shrink-0">
+              ${n.type === 'success' ? '✅' : '❌'}
+            </div>
+            <div class="flex-1">
+              <p class="text-sm font-medium">${n.message}</p>
+            </div>
           </div>
         </div>
       `).join('');
@@ -97,31 +179,40 @@
     function handleSetup(e) {
       e.preventDefault();
       const emailInput = document.getElementById('email-input');
-      email = emailInput.value;
+      email = emailInput.value.trim();
       
       if (!email || !email.includes('@')) {
         showNotification('error', 'Please enter a valid email address.');
+        emailInput.focus();
         return;
       }
       
-      const link = generateSalesLink(email);
-      const conf = Math.floor(Math.random() * 12);
-      const pend = Math.floor(Math.random() * 8);
+      // Show loading state
+      const button = document.querySelector('button[onclick="handleSetup(event)"]');
+      const originalText = button.innerHTML;
+      button.innerHTML = '<div class="flex items-center justify-center"><div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div><span class="ml-2">Processing...</span></div>';
+      button.disabled = true;
+      
+      setTimeout(() => {
+        const link = generateSalesLink(email);
+        const conf = Math.floor(Math.random() * 12) + 3;
+        const pend = Math.floor(Math.random() * 8) + 2;
 
-      salesLink = link;
-      salesPersonName = email.split('@')[0];
-      currentStep = 'dashboard';
-      
-      stats = {
-        totalShares: Math.floor(Math.random() * 50) + 20,
-        pendingSignups: pend,
-        confirmedSignups: conf,
-        totalEarnings: conf * payoutPerSignup,
-        remainingSlots: maxSignups - conf - pend
-      };
-      
-      showNotification('success', 'Sales portal activated. Your link is ready to share.');
-      render();
+        salesLink = link;
+        salesPersonName = email.split('@')[0];
+        currentStep = 'dashboard';
+        
+        stats = {
+          totalShares: Math.floor(Math.random() * 50) + 20,
+          pendingSignups: pend,
+          confirmedSignups: conf,
+          totalEarnings: conf * payoutPerSignup,
+          remainingSlots: maxSignups - conf - pend
+        };
+        
+        showNotification('success', 'Sales portal activated successfully! Your link is ready to share.');
+        render();
+      }, 1500);
     }
 
     function copyLink() {
@@ -150,77 +241,80 @@
 
     function renderSignup() {
       return `
-        <div class="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black">
-          <div class="container mx-auto px-4 py-16">
+        <div class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-black relative overflow-hidden">
+          <!-- Background decoration -->
+          <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(139,92,246,0.1),transparent_50%)]"></div>
+          
+          <div class="container mx-auto px-4 py-16 relative z-10">
             <div class="max-w-lg mx-auto">
 
               <!-- header -->
-              <div class="text-center mb-8">
-                <div class="flex items-center justify-center mb-6">
-                  <div class="flex flex-col gap-1">
-                    <div class="w-8 h-1.5 bg-gradient-to-r from-purple-400 to-violet-500 rounded-full"></div>
-                    <div class="w-8 h-1.5 bg-gradient-to-r from-purple-500 to-violet-600 rounded-full"></div>
-                    <div class="w-8 h-1.5 bg-gradient-to-r from-purple-600 to-violet-700 rounded-full"></div>
+              <div class="text-center mb-12 fade-in">
+                <div class="flex items-center justify-center mb-8">
+                  <div class="flex flex-col gap-1 logo-animation">
+                    <div class="w-10 h-2 bg-gradient-to-r from-purple-400 to-violet-500 rounded-full"></div>
+                    <div class="w-10 h-2 bg-gradient-to-r from-purple-500 to-violet-600 rounded-full"></div>
+                    <div class="w-10 h-2 bg-gradient-to-r from-purple-600 to-violet-700 rounded-full"></div>
                   </div>
-                  <h1 class="text-3xl font-bold text-white ml-4">LVL3.ai</h1>
+                  <h1 class="text-4xl font-bold text-white ml-4">LVL3.ai</h1>
                 </div>
-                <div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-1 mb-6 inline-block">
-                  <span class="text-gray-300 text-sm px-4 py-2">Sales Team Portal</span>
+                <div class="glass-effect bg-slate-800/30 border border-slate-700/50 rounded-2xl p-2 mb-8 inline-block">
+                  <span class="text-gray-300 text-sm px-6 py-2 font-medium">Sales Team Portal</span>
                 </div>
               </div>
 
               <!-- card -->
-              <div class="bg-slate-800/80 backdrop-blur-sm rounded-3xl border border-slate-700/50 p-8 shadow-2xl">
-                <div class="text-center mb-8">
-                  <h2 class="text-4xl font-bold gradient-text mb-4">
+              <div class="glass-effect bg-slate-800/40 backdrop-blur-sm rounded-3xl border border-slate-700/50 p-8 shadow-2xl card-hover">
+                <div class="text-center mb-10">
+                  <h2 class="text-5xl font-bold gradient-text mb-6 leading-tight">
                     Sales Incentive<br/>Program
                   </h2>
-                  <p class="text-gray-300 text-lg">
+                  <p class="text-gray-300 text-xl leading-relaxed">
                     Get your personal sales link and earn up to
-                    <span class="text-green-400 font-bold"> $${maxEarnings}</span>
+                    <span class="text-green-400 font-bold text-2xl"> $${maxEarnings.toLocaleString()}</span>
                   </p>
                 </div>
 
                 <!-- details -->
-                <div class="bg-slate-900/50 border border-slate-700/50 rounded-2xl p-6 mb-8">
-                  <h3 class="text-white font-semibold mb-4 flex items-center">
+                <div class="glass-effect bg-slate-900/50 border border-slate-700/50 rounded-2xl p-8 mb-8">
+                  <h3 class="text-white font-semibold mb-6 flex items-center text-lg">
                     🎯 Your Commission Structure
                   </h3>
                   <div class="space-y-4">
-                    <div class="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
-                      <span class="text-gray-300">Per qualified signup</span>
-                      <span class="text-green-400 font-bold">$${payoutPerSignup}</span>
+                    <div class="flex items-center justify-between p-4 bg-slate-800/50 rounded-xl border border-slate-700/30">
+                      <span class="text-gray-300 font-medium">Per qualified signup</span>
+                      <span class="text-green-400 font-bold text-xl">$${payoutPerSignup}</span>
                     </div>
-                    <div class="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
-                      <span class="text-gray-300">Maximum signups</span>
-                      <span class="text-purple-400 font-bold">${maxSignups}</span>
+                    <div class="flex items-center justify-between p-4 bg-slate-800/50 rounded-xl border border-slate-700/30">
+                      <span class="text-gray-300 font-medium">Maximum signups</span>
+                      <span class="text-purple-400 font-bold text-xl">${maxSignups.toLocaleString()}</span>
                     </div>
-                    <div class="flex items-center justify-between p-3 bg-gradient-to-r from-green-900/30 to-emerald-900/30 border border-green-700/30 rounded-lg">
-                      <span class="text-white font-semibold">Maximum earnings</span>
-                      <span class="text-green-400 font-bold text-xl">$${maxEarnings}</span>
+                    <div class="flex items-center justify-between p-4 bg-gradient-to-r from-green-900/30 to-emerald-900/30 border border-green-700/30 rounded-xl">
+                      <span class="text-white font-semibold text-lg">Maximum earnings</span>
+                      <span class="text-green-400 font-bold text-2xl">$${maxEarnings.toLocaleString()}</span>
                     </div>
                   </div>
                 </div>
 
                 <!-- how it works -->
-                <div class="bg-purple-900/20 border border-purple-700/30 rounded-2xl p-6 mb-8">
-                  <h3 class="text-white font-semibold mb-3">How It Works:</h3>
-                  <div class="space-y-3 text-sm text-gray-300">
+                <div class="glass-effect bg-purple-900/20 border border-purple-700/30 rounded-2xl p-8 mb-8">
+                  <h3 class="text-white font-semibold mb-6 text-lg">How It Works:</h3>
+                  <div class="space-y-4 text-gray-300">
                     <div class="flex items-start">
-                      <div class="w-2 h-2 bg-gradient-to-r from-purple-400 to-violet-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                      <span>Get your unique sales link below</span>
+                      <div class="w-3 h-3 bg-gradient-to-r from-purple-400 to-violet-500 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                      <span class="text-base">Get your unique sales link below</span>
                     </div>
                     <div class="flex items-start">
-                      <div class="w-2 h-2 bg-gradient-to-r from-purple-400 to-violet-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                      <span>Share with prospects via email, social, or direct outreach</span>
+                      <div class="w-3 h-3 bg-gradient-to-r from-purple-400 to-violet-500 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                      <span class="text-base">Share with prospects via email, social, or direct outreach</span>
                     </div>
                     <div class="flex items-start">
-                      <div class="w-2 h-2 bg-gradient-to-r from-purple-400 to-violet-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                      <span>Prospects sign up for LVL3.ai early access</span>
+                      <div class="w-3 h-3 bg-gradient-to-r from-purple-400 to-violet-500 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                      <span class="text-base">Prospects sign up for LVL3.ai early access</span>
                     </div>
                     <div class="flex items-start">
-                      <div class="w-2 h-2 bg-gradient-to-r from-purple-400 to-violet-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                      <span>Earn $5 for each user who stays active for 3+ months</span>
+                      <div class="w-3 h-3 bg-gradient-to-r from-purple-400 to-violet-500 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                      <span class="text-base">Earn $5 for each user who stays active for 3+ months</span>
                     </div>
                   </div>
                 </div>
@@ -233,13 +327,13 @@
                       id="email-input"
                       type="email"
                       placeholder="Enter your LVL3.ai email"
-                      class="w-full px-4 py-4 bg-slate-900/50 border border-slate-600/50 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white placeholder-gray-400"
+                      class="w-full px-6 py-4 bg-slate-900/50 border border-slate-600/50 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white placeholder-gray-400 input-focus transition-all duration-300"
                       onkeypress="if(event.key==='Enter') handleSetup(event)"
                     />
                   </div>
                   <button
                     onclick="handleSetup(event)"
-                    class="w-full bg-gradient-to-r from-purple-600 to-violet-600 text-white py-4 px-6 rounded-xl font-semibold hover:from-purple-700 hover:to-violet-700 transition-all duration-300 shadow-lg hover:shadow-purple-500/25"
+                    class="w-full bg-gradient-to-r from-purple-600 to-violet-600 text-white py-5 px-6 rounded-xl font-semibold text-lg button-hover transition-all duration-300 shadow-lg hover:shadow-purple-500/25"
                   >
                     Get My Sales Link →
                   </button>
@@ -256,13 +350,16 @@
       const earningsPct = (stats.totalEarnings / maxEarnings) * 100;
 
       return `
-        <div class="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black">
+        <div class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-black relative overflow-hidden">
+          <!-- Background decoration -->
+          <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(139,92,246,0.1),transparent_50%)]"></div>
+          
           <!-- header -->
-          <div class="bg-slate-800/50 backdrop-blur-sm border-b border-slate-700/50">
+          <div class="glass-effect bg-slate-800/30 backdrop-blur-sm border-b border-slate-700/50 relative z-10">
             <div class="container mx-auto px-4 py-6">
               <div class="flex items-center justify-between">
                 <div class="flex items-center">
-                  <div class="flex flex-col gap-1">
+                  <div class="flex flex-col gap-1 logo-animation">
                     <div class="w-8 h-1.5 bg-gradient-to-r from-purple-400 to-violet-500 rounded-full"></div>
                     <div class="w-8 h-1.5 bg-gradient-to-r from-purple-500 to-violet-600 rounded-full"></div>
                     <div class="w-8 h-1.5 bg-gradient-to-r from-purple-600 to-violet-700 rounded-full"></div>
@@ -272,41 +369,41 @@
                     <p class="text-sm text-gray-400">Sales Team Dashboard</p>
                   </div>
                 </div>
-                <div class="bg-slate-700/50 border border-slate-600/50 rounded-lg px-4 py-2">
-                  <span class="text-sm text-gray-300">Welcome, ${salesPersonName}</span>
+                <div class="glass-effect bg-slate-700/30 border border-slate-600/50 rounded-xl px-6 py-3">
+                  <span class="text-sm text-gray-300 font-medium">Welcome, ${salesPersonName}</span>
                 </div>
               </div>
             </div>
           </div>
 
-          <div class="container mx-auto px-4 py-8">
+          <div class="container mx-auto px-4 py-8 relative z-10">
 
             <!-- earnings overview -->
-            <div class="bg-gradient-to-r from-green-900/20 via-emerald-900/20 to-green-900/20 border border-green-700/30 p-6 rounded-xl mb-8">
-              <div class="flex items-center justify-between mb-4">
-                <h2 class="text-2xl font-bold text-white">Earnings Progress</h2>
-                <span class="text-2xl">🏆</span>
+            <div class="glass-effect bg-gradient-to-r from-green-900/20 via-emerald-900/20 to-green-900/20 border border-green-700/30 p-8 rounded-2xl mb-8 card-hover">
+              <div class="flex items-center justify-between mb-6">
+                <h2 class="text-3xl font-bold text-white">Earnings Progress</h2>
+                <span class="text-3xl pulse-animation">🏆</span>
               </div>
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="text-center">
-                  <p class="text-3xl font-bold text-green-400">$${stats.totalEarnings}</p>
-                  <p class="text-sm text-gray-400">Current Earnings</p>
-                  <div class="w-full bg-slate-700/50 rounded-full h-2 mt-2">
-                    <div class="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full progress-bar" style="width: ${earningsPct}%"></div>
+                  <p class="text-4xl font-bold text-green-400 mb-2">$${stats.totalEarnings.toLocaleString()}</p>
+                  <p class="text-gray-400 font-medium">Current Earnings</p>
+                  <div class="w-full bg-slate-700/50 rounded-full h-3 mt-4">
+                    <div class="bg-gradient-to-r from-green-500 to-emerald-500 h-3 rounded-full progress-bar" style="width: ${earningsPct}%"></div>
                   </div>
                 </div>
                 <div class="text-center">
-                  <p class="text-3xl font-bold text-purple-400">${stats.confirmedSignups}</p>
-                  <p class="text-sm text-gray-400">Confirmed Signups</p>
-                  <div class="w-full bg-slate-700/50 rounded-full h-2 mt-2">
-                    <div class="bg-gradient-to-r from-purple-500 to-violet-500 h-2 rounded-full progress-bar" style="width: ${progressPct}%"></div>
+                  <p class="text-4xl font-bold text-purple-400 mb-2">${stats.confirmedSignups}</p>
+                  <p class="text-gray-400 font-medium">Confirmed Signups</p>
+                  <div class="w-full bg-slate-700/50 rounded-full h-3 mt-4">
+                    <div class="bg-gradient-to-r from-purple-500 to-violet-500 h-3 rounded-full progress-bar" style="width: ${progressPct}%"></div>
                   </div>
                 </div>
                 <div class="text-center">
-                  <p class="text-3xl font-bold text-white">${stats.remainingSlots}</p>
-                  <p class="text-sm text-gray-400">Remaining Slots</p>
-                  <p class="text-xs text-green-400 mt-1">
-                    Worth $${stats.remainingSlots * payoutPerSignup}
+                  <p class="text-4xl font-bold text-white mb-2">${stats.remainingSlots.toLocaleString()}</p>
+                  <p class="text-gray-400 font-medium">Remaining Slots</p>
+                  <p class="text-sm text-green-400 mt-2 font-medium">
+                    Worth $${(stats.remainingSlots * payoutPerSignup).toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -314,44 +411,44 @@
 
             <!-- stats grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 p-6 rounded-xl">
+              <div class="glass-effect bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 p-6 rounded-2xl card-hover">
                 <div class="flex items-center justify-between">
                   <div>
-                    <p class="text-sm text-gray-400">Link Shares</p>
-                    <p class="text-2xl font-bold text-blue-400">${stats.totalShares}</p>
+                    <p class="text-sm text-gray-400 font-medium">Link Shares</p>
+                    <p class="text-3xl font-bold text-blue-400">${stats.totalShares.toLocaleString()}</p>
                   </div>
-                  <span class="text-2xl">🔗</span>
+                  <span class="text-3xl">🔗</span>
                 </div>
               </div>
-              <div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 p-6 rounded-xl">
+              <div class="glass-effect bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 p-6 rounded-2xl card-hover">
                 <div class="flex items-center justify-between">
                   <div>
-                    <p class="text-sm text-gray-400">Pending (3mo)</p>
-                    <p class="text-2xl font-bold text-amber-400">${stats.pendingSignups}</p>
+                    <p class="text-sm text-gray-400 font-medium">Pending (3mo)</p>
+                    <p class="text-3xl font-bold text-amber-400">${stats.pendingSignups}</p>
                   </div>
-                  <span class="text-2xl">⏰</span>
+                  <span class="text-3xl">⏰</span>
                 </div>
               </div>
-              <div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 p-6 rounded-xl">
+              <div class="glass-effect bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 p-6 rounded-2xl card-hover">
                 <div class="flex items-center justify-between">
                   <div>
-                    <p class="text-sm text-gray-400">Conversion Rate</p>
-                    <p class="text-2xl font-bold text-green-400">${
+                    <p class="text-sm text-gray-400 font-medium">Conversion Rate</p>
+                    <p class="text-3xl font-bold text-green-400">${
                       stats.totalShares > 0
                         ? Math.round(((stats.confirmedSignups + stats.pendingSignups) / stats.totalShares) * 100)
                         : 0
                     }%</p>
                   </div>
-                  <span class="text-2xl">📈</span>
+                  <span class="text-3xl">📈</span>
                 </div>
               </div>
-              <div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 p-6 rounded-xl">
+              <div class="glass-effect bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 p-6 rounded-2xl card-hover">
                 <div class="flex items-center justify-between">
                   <div>
-                    <p class="text-sm text-gray-400">Potential Value</p>
-                    <p class="text-2xl font-bold text-purple-400">$${maxEarnings}</p>
+                    <p class="text-sm text-gray-400 font-medium">Potential Value</p>
+                    <p class="text-3xl font-bold text-purple-400">$${maxEarnings.toLocaleString()}</p>
                   </div>
-                  <span class="text-2xl">🎯</span>
+                  <span class="text-3xl">🎯</span>
                 </div>
               </div>
             </div>
@@ -359,88 +456,88 @@
             <!-- main two-col -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <!-- left — link / templates -->
-              <div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 p-6 rounded-xl">
-                <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+              <div class="glass-effect bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 p-8 rounded-2xl card-hover">
+                <h2 class="text-2xl font-semibold text-white mb-6 flex items-center">
                   🔗 Your Personal Sales Link
                 </h2>
-                <div class="flex gap-3 mb-4">
+                <div class="flex gap-3 mb-6">
                   <input
                     type="text"
                     value="${salesLink}"
                     readonly
-                    class="flex-1 px-4 py-3 bg-slate-900/50 border border-slate-600/50 rounded-lg text-gray-300 text-sm"
+                    class="flex-1 px-4 py-4 bg-slate-900/50 border border-slate-600/50 rounded-xl text-gray-300 text-sm font-mono"
                   />
                   <button
                     onclick="copyLink()"
-                    class="px-4 py-3 bg-gradient-to-r from-purple-600 to-violet-600 text-white rounded-lg hover:from-purple-700 hover:to-violet-700 transition-all duration-200"
+                    class="px-6 py-4 bg-gradient-to-r from-purple-600 to-violet-600 text-white rounded-xl hover:from-purple-700 hover:to-violet-700 transition-all duration-200 button-hover"
                   >
                     📋
                   </button>
                 </div>
-                <div class="space-y-3 text-sm">
-                  <div class="p-3 bg-purple-900/20 border border-purple-700/30 rounded-lg">
-                    <p class="text-purple-300 font-medium mb-1">📧 Email Template:</p>
-                    <p class="text-gray-300">"Get early access to LVL3.ai – revolutionary AI that thinks faster than you can ask: ${salesLink}"</p>
+                <div class="space-y-4 text-sm">
+                  <div class="glass-effect p-4 bg-purple-900/20 border border-purple-700/30 rounded-xl">
+                    <p class="text-purple-300 font-medium mb-2">📧 Email Template:</p>
+                    <p class="text-gray-300 leading-relaxed">"Get early access to LVL3.ai – revolutionary AI that thinks faster than you can ask: ${salesLink}"</p>
                   </div>
-                  <div class="p-3 bg-blue-900/20 border border-blue-700/30 rounded-lg">
-                    <p class="text-blue-300 font-medium mb-1">💬 Social Share:</p>
-                    <p class="text-gray-300">"Exclusive early access to next-gen AI technology. Limited spots available: ${salesLink}"</p>
+                  <div class="glass-effect p-4 bg-blue-900/20 border border-blue-700/30 rounded-xl">
+                    <p class="text-blue-300 font-medium mb-2">💬 Social Share:</p>
+                    <p class="text-gray-300 leading-relaxed">"Exclusive early access to next-gen AI technology. Limited spots available: ${salesLink}"</p>
                   </div>
                 </div>
               </div>
 
               <!-- right — activity -->
-              <div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 p-6 rounded-xl">
-                <h2 class="text-xl font-semibold text-white mb-4">Sales Activity</h2>
-                <div class="space-y-3">
+              <div class="glass-effect bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 p-8 rounded-2xl card-hover">
+                <h2 class="text-2xl font-semibold text-white mb-6">Sales Activity</h2>
+                <div class="space-y-4">
                   ${stats.totalShares ? `
-                    <div class="p-3 bg-blue-900/20 border border-blue-700/30 rounded-lg">
-                      <div class="flex items-center gap-2">
-                        <span class="text-blue-400">🔗</span>
-                        <span class="text-sm text-gray-300">Link shared ${stats.totalShares} times</span>
+                    <div class="glass-effect p-4 bg-blue-900/20 border border-blue-700/30 rounded-xl">
+                      <div class="flex items-center gap-3">
+                        <span class="text-blue-400 text-xl">🔗</span>
+                        <span class="text-gray-300 font-medium">Link shared ${stats.totalShares.toLocaleString()} times</span>
                       </div>
                     </div>
                   ` : ''}
                   ${stats.pendingSignups ? `
-                    <div class="p-3 bg-amber-900/20 border border-amber-700/30 rounded-lg">
-                      <div class="flex items-center gap-2">
-                        <span class="text-amber-400">⏰</span>
-                        <span class="text-sm text-gray-300">${stats.pendingSignups} signup${stats.pendingSignups !== 1 ? 's' : ''} pending 3-month validation</span>
+                    <div class="glass-effect p-4 bg-amber-900/20 border border-amber-700/30 rounded-xl">
+                      <div class="flex items-center gap-3">
+                        <span class="text-amber-400 text-xl">⏰</span>
+                        <span class="text-gray-300 font-medium">${stats.pendingSignups} signup${stats.pendingSignups !== 1 ? 's' : ''} pending 3-month validation</span>
                       </div>
                     </div>
                   ` : ''}
                   ${stats.confirmedSignups ? `
-                    <div class="p-3 bg-green-900/20 border border-green-700/30 rounded-lg">
-                      <div class="flex items-center gap-2">
-                        <span class="text-green-400">💰</span>
-                        <span class="text-sm text-gray-300">$${stats.totalEarnings} earned from ${stats.confirmedSignups} confirmed signup${stats.confirmedSignups !== 1 ? 's' : ''}</span>
+                    <div class="glass-effect p-4 bg-green-900/20 border border-green-700/30 rounded-xl">
+                      <div class="flex items-center gap-3">
+                        <span class="text-green-400 text-xl">💰</span>
+                        <span class="text-gray-300 font-medium">$${stats.totalEarnings.toLocaleString()} earned from ${stats.confirmedSignups} confirmed signup${stats.confirmedSignups !== 1 ? 's' : ''}</span>
                       </div>
                     </div>
                   ` : ''}
 
                   ${!stats.totalShares ? `
-                    <div class="text-center py-8 text-gray-500">
-                      <span class="text-4xl opacity-30">🎯</span>
-                      <p class="text-gray-400">Ready to start earning?</p>
-                      <p class="text-sm text-gray-500">Copy your sales link and start sharing!</p>
+                    <div class="text-center py-12 text-gray-500">
+                      <span class="text-6xl opacity-30 mb-4 block">🎯</span>
+                      <p class="text-gray-400 text-lg font-medium mb-2">Ready to start earning?</p>
+                      <p class="text-gray-500">Copy your sales link and start sharing!</p>
                     </div>
                   ` : ''}
                 </div>
               </div>
 
               <!-- bottom — progress to goal -->
-              <div class="lg:col-span-2 mt-8 bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 p-6 rounded-xl">
-                <div class="flex items-center justify-between mb-4">
-                  <h3 class="text-lg font-semibold text-white">Progress to Maximum Earnings</h3>
-                  <span class="text-2xl font-bold text-green-400">
-                    $${stats.totalEarnings} / $${maxEarnings}
+              <div class="lg:col-span-2 mt-8 glass-effect bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 p-8 rounded-2xl card-hover">
+                <div class="flex items-center justify-between mb-6">
+                  <h3 class="text-xl font-semibold text-white">Progress to Maximum Earnings</h3>
+                  <span class="text-3xl font-bold text-green-400">
+                    $${stats.totalEarnings.toLocaleString()} / $${maxEarnings.toLocaleString()}
                   </span>
                 </div>
-                <div class="w-full bg-slate-700/50 rounded-full h-4 mb-2">
-                  <div class="bg-gradient-to-r from-green-500 to-emerald-500 h-4 rounded-full progress-bar" style="width: ${earningsPct}%"></div>
+                <div class="w-full bg-slate-700/50 rounded-full h-5 mb-4">
+                  <div class="bg-gradient-to-r from-green-500 to-emerald-500 h-5 rounded-full progress-bar" style="width: ${earningsPct}%"></div>
                 </div>
-                <div class="flex justify-between text-sm text-gray-400">
-                  <span>${stats.confirmedSignups + stats.pendingSignups} / ${maxSignups} signups</span>
+                <div class="flex justify-between text-sm text-gray-400 font-medium">
+                  <span>${stats.confirmedSignups + stats.pendingSignups} / ${maxSignups.toLocaleString()} signups</span>
                   <span>${Math.round(earningsPct)}% complete</span>
                 </div>
               </div>
