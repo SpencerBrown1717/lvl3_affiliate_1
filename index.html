@@ -1,618 +1,424 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LVL3.ai Sales Portal</title>
-    
-    <!-- React and ReactDOM with fallbacks -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    
-    <!-- Babel with fallback -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- Add Babel React preset for JSX support -->
-    <script src="https://unpkg.com/@babel/preset-react@7.18.6/lib/index.min.js"></script>
-    
-    <!-- Lucide icons with fallback -->
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <script>
-        // Ensure React is available
-        if (typeof React === 'undefined') {
-            document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"><\/script>');
-        }
-        if (typeof ReactDOM === 'undefined') {
-            document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"><\/script>');
-        }
-        
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        slate: {
-                            600: '#475569',
-                            700: '#334155',
-                            800: '#1e293b',
-                            900: '#0f172a',
-                        },
-                        purple: {
-                            400: '#c084fc',
-                            500: '#a855f7',
-                            600: '#9333ea',
-                            700: '#7c3aed',
-                        },
-                        violet: {
-                            400: '#a78bfa',
-                            500: '#8b5cf6',
-                            600: '#7c3aed',
-                            700: '#6d28d9',
-                        },
-                        green: {
-                            400: '#4ade80',
-                            500: '#22c55e',
-                            700: '#15803d',
-                            900: '#14532d',
-                        },
-                        emerald: {
-                            500: '#10b981',
-                            900: '#064e3b',
-                        },
-                        amber: {
-                            400: '#fbbf24',
-                            700: '#b45309',
-                            900: '#78350f',
-                        },
-                        blue: {
-                            400: '#60a5fa',
-                            700: '#1d4ed8',
-                            900: '#1e3a8a',
-                        },
-                        red: {
-                            600: '#dc2626',
-                        },
-                        pink: {
-                            600: '#db2777',
-                        },
-                        yellow: {
-                            400: '#facc15',
-                        },
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        .bg-clip-text {
-            -webkit-background-clip: text;
-            background-clip: text;
-        }
-        
-        /* Loading spinner */
-        .loading-spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #a855f7;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LVL3.ai Sales Portal</title>
+
+  <!-- Tailwind (via CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- React 18 UMD builds -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+
+  <!-- Lucide-React icons (UMD) -->
+  <script src="https://unpkg.com/lucide-react@latest/dist/lucide-react.umd.js"></script>
+
+  <!-- Babel (JSX → JS in-browser) -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
-<body>
-    <div id="root">
-        <!-- Loading state -->
-        <div class="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black flex items-center justify-center">
-            <div class="text-center">
-                <div class="loading-spinner mx-auto mb-4"></div>
-                <p class="text-white text-lg">Loading LVL3.ai Sales Portal...</p>
-            </div>
+<body class="bg-black">
+  <div id="root"></div>
+
+  <!-- Your portal code -->
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+    /* grab needed icons off the global `lucideReact` UMD bundle */
+    const {
+      Mail, Copy, DollarSign, Users, Clock,
+      CheckCircle, AlertCircle, Zap, Link2,
+      Target, Trophy, TrendingUp
+    } = lucideReact;
+
+    /* ---------- PORTAL ---------- */
+    const LVL3SalesPortal = () => {
+      const [currentStep, setCurrentStep] = useState('signup');
+      const [email, setEmail]             = useState('');
+      const [salesPersonName, setSalesPersonName] = useState('');
+      const [salesLink, setSalesLink]     = useState('');
+      const [stats, setStats] = useState({
+        totalShares: 0,
+        pendingSignups: 0,
+        confirmedSignups: 0,
+        totalEarnings: 0,
+        remainingSlots: 500
+      });
+      const [notifications, setNotifications] = useState([]);
+
+      const maxSignups        = 500;
+      const payoutPerSignup   = 5;
+      const maxEarnings       = maxSignups * payoutPerSignup;
+
+      /* helpers */
+      const generateSalesLink = (addr) =>
+        `https://lvl3.ai/early-access?sales=${
+          btoa(addr).replace(/[^a-zA-Z0-9]/g, '').substring(0, 8)
+        }`;
+
+      const handleSetup = (e) => {
+        e.preventDefault?.();
+        if (!email || !email.includes('@')) {
+          setNotifications([{ type: 'error', message: 'Please enter a valid email address.' }]);
+          return;
+        }
+        const link  = generateSalesLink(email);
+        const conf  = Math.floor(Math.random() * 12);
+        const pend  = Math.floor(Math.random() * 8);
+
+        setSalesLink(link);
+        setSalesPersonName(email.split('@')[0]);
+        setCurrentStep('dashboard');
+        setNotifications([{ type: 'success', message: 'Sales portal activated. Your link is ready to share.' }]);
+        setStats({
+          totalShares: Math.floor(Math.random() * 50) + 20,
+          pendingSignups: pend,
+          confirmedSignups: conf,
+          totalEarnings: conf * payoutPerSignup,
+          remainingSlots: maxSignups - conf - pend
+        });
+      };
+
+      const copyLink = () => {
+        navigator.clipboard.writeText(salesLink);
+        setNotifications([{ type: 'success', message: 'Sales link copied to clipboard!' }]);
+      };
+
+      /* auto-dismiss notifications */
+      useEffect(() => {
+        if (!notifications.length) return;
+        const t = setTimeout(() => setNotifications([]), 3000);
+        return () => clearTimeout(t);
+      }, [notifications]);
+
+      /* --- UI bits --- */
+      const Notification = ({ type, message }) => (
+        <div className={`fixed top-4 right-4 p-4 rounded-xl shadow-2xl z-50 ${
+          type === 'success'
+            ? 'bg-gradient-to-r from-purple-600 to-violet-600 text-white'
+            : 'bg-gradient-to-r from-red-600 to-pink-600 text-white'
+        }`}>
+          <div className="flex items-center gap-2">
+            {type === 'success' ? <CheckCircle size={20}/> : <AlertCircle size={20}/>}
+            {message}
+          </div>
         </div>
-    </div>
+      );
 
-    <script type="text/babel" data-presets="react">
-        // Wait for all dependencies to load
-        function waitForDependencies() {
-            return new Promise((resolve) => {
-                const checkDependencies = () => {
-                    if (typeof React !== 'undefined' && typeof ReactDOM !== 'undefined') {
-                        resolve();
-                    } else {
-                        setTimeout(checkDependencies, 100);
-                    }
-                };
-                checkDependencies();
-            });
-        }
+      const LogoIcon = () => (
+        <div className="flex flex-col gap-1">
+          <div className="w-8 h-1.5 bg-gradient-to-r from-purple-400 to-violet-500 rounded-full"></div>
+          <div className="w-8 h-1.5 bg-gradient-to-r from-purple-500 to-violet-600 rounded-full"></div>
+          <div className="w-8 h-1.5 bg-gradient-to-r from-purple-600 to-violet-700 rounded-full"></div>
+        </div>
+      );
 
-        // Main app initialization
-        async function initApp() {
-            try {
-                await waitForDependencies();
-                const { useState, useEffect } = React;
-                // Defensive Lucide icon handling
-                const lucide = window.lucide || {};
-                const getIcon = (name) => (lucide[name] ? lucide[name] : null);
-                const Mail = getIcon('Mail');
-                const Copy = getIcon('Copy');
-                const DollarSign = getIcon('DollarSign');
-                const Users = getIcon('Users');
-                const Clock = getIcon('Clock');
-                const CheckCircle = getIcon('CheckCircle');
-                const AlertCircle = getIcon('AlertCircle');
-                const Zap = getIcon('Zap');
-                const Link2 = getIcon('Link2');
-                const Target = getIcon('Target');
-                const Trophy = getIcon('Trophy');
-                const TrendingUp = getIcon('TrendingUp');
+      /* ------------ SIGN-UP STEP ------------ */
+      if (currentStep === 'signup') {
+        return (
+          <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black">
+            {notifications.map((n,i)=><Notification key={i}{...n}/>)}
+            <div className="container mx-auto px-4 py-16">
+              <div className="max-w-lg mx-auto">
 
-                const LVL3SalesPortal = () => {
-                    const [currentStep, setCurrentStep] = useState('signup');
-                    const [email, setEmail] = useState('');
-                    const [salesPersonName, setSalesPersonName] = useState('');
-                    const [salesLink, setSalesLink] = useState('');
-                    const [stats, setStats] = useState({
-                        totalShares: 0,
-                        pendingSignups: 0,
-                        confirmedSignups: 0,
-                        totalEarnings: 0,
-                        remainingSlots: 500
-                    });
-                    const [notifications, setNotifications] = useState([]);
+                {/* header */}
+                <div className="text-center mb-8">
+                  <div className="flex items-center justify-center mb-6">
+                    <LogoIcon/>
+                    <h1 className="text-3xl font-bold text-white ml-4">LVL3.ai</h1>
+                  </div>
+                  <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-1 mb-6 inline-block">
+                    <span className="text-gray-300 text-sm px-4 py-2">Sales Team Portal</span>
+                  </div>
+                </div>
 
-                    const maxSignups = 500;
-                    const payoutPerSignup = 5;
-                    const maxEarnings = maxSignups * payoutPerSignup; // $2,500
+                {/* card */}
+                <div className="bg-slate-800/80 backdrop-blur-sm rounded-3xl border border-slate-700/50 p-8 shadow-2xl">
+                  <div className="text-center mb-8">
+                    <h2 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-violet-400 bg-clip-text text-transparent mb-4">
+                      Sales Incentive<br/>Program
+                    </h2>
+                    <p className="text-gray-300 text-lg">
+                      Get your personal sales link and earn up to
+                      <span className="text-green-400 font-bold"> ${maxEarnings}</span>
+                    </p>
+                  </div>
 
-                    // Generate unique sales link
-                    const generateSalesLink = (email) => {
-                        const salesCode = btoa(email).replace(/[^a-zA-Z0-9]/g, '').substring(0, 8);
-                        return `https://lvl3.ai/early-access?sales=${salesCode}`;
-                    };
-
-                    // Handle setup
-                    const handleSetup = async (e) => {
-                        e.preventDefault?.();
-                        if (!email || !email.includes('@')) {
-                            setNotifications([{ type: 'error', message: 'Please enter a valid email address.' }]);
-                            return;
-                        }
-                        try {
-                            const link = generateSalesLink(email);
-                            setSalesLink(link);
-                            setCurrentStep('dashboard');
-                            setSalesPersonName(email.split('@')[0]);
-                            setNotifications([{ type: 'success', message: 'Sales portal activated. Your link is ready to share.' }]);
-                            // Simulate some demo data
-                            const confirmed = Math.floor(Math.random() * 12);
-                            const pending = Math.floor(Math.random() * 8);
-                            setStats({
-                                totalShares: Math.floor(Math.random() * 50) + 20,
-                                pendingSignups: pending,
-                                confirmedSignups: confirmed,
-                                totalEarnings: confirmed * payoutPerSignup,
-                                remainingSlots: maxSignups - confirmed - pending
-                            });
-                        } catch (error) {
-                            setNotifications([{ type: 'error', message: 'Setup failed. Please try again.' }]);
-                        }
-                    };
-
-                    // Copy link to clipboard with fallback
-                    const copyLink = () => {
-                        if (navigator.clipboard && window.isSecureContext) {
-                            navigator.clipboard.writeText(salesLink).then(() => {
-                                setNotifications([{ type: 'success', message: 'Sales link copied to clipboard!' }]);
-                            }, () => {
-                                fallbackCopyTextToClipboard(salesLink);
-                            });
-                        } else {
-                            fallbackCopyTextToClipboard(salesLink);
-                        }
-                    };
-                    // Fallback for clipboard
-                    function fallbackCopyTextToClipboard(text) {
-                        const textArea = document.createElement('textarea');
-                        textArea.value = text;
-                        textArea.style.position = 'fixed';
-                        document.body.appendChild(textArea);
-                        textArea.focus();
-                        textArea.select();
-                        try {
-                            document.execCommand('copy');
-                            setNotifications([{ type: 'success', message: 'Sales link copied to clipboard!' }]);
-                        } catch (err) {
-                            setNotifications([{ type: 'error', message: 'Failed to copy link.' }]);
-                        }
-                        document.body.removeChild(textArea);
-                    }
-
-                    // Clear notifications after 3 seconds
-                    useEffect(() => {
-                        if (notifications.length > 0) {
-                            const timer = setTimeout(() => {
-                                setNotifications([]);
-                            }, 3000);
-                            return () => clearTimeout(timer);
-                        }
-                    }, [notifications]);
-
-                    const Notification = ({ type, message }) => (
-                        <div className={`fixed top-4 right-4 p-4 rounded-xl shadow-2xl z-50 ${
-                            type === 'success' 
-                                ? 'bg-gradient-to-r from-purple-600 to-violet-600 text-white' 
-                                : 'bg-gradient-to-r from-red-600 to-pink-600 text-white'
-                        }`}>
-                            <div className="flex items-center gap-2">
-                                {type === 'success' ? 
-                                    (CheckCircle ? <CheckCircle size={20} /> : '✓') : 
-                                    (AlertCircle ? <AlertCircle size={20} /> : '⚠')
-                                }
-                                {message}
-                            </div>
-                        </div>
-                    );
-
-                    const LogoIcon = () => (
-                        <div className="flex flex-col gap-1">
-                            <div className="w-8 h-1.5 bg-gradient-to-r from-purple-400 to-violet-500 rounded-full"></div>
-                            <div className="w-8 h-1.5 bg-gradient-to-r from-purple-500 to-violet-600 rounded-full"></div>
-                            <div className="w-8 h-1.5 bg-gradient-to-r from-purple-600 to-violet-700 rounded-full"></div>
-                        </div>
-                    );
-
-                    if (currentStep === 'signup') {
-                        return (
-                            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black">
-                                {notifications.map((notif, index) => (
-                                    <Notification key={index} type={notif.type} message={notif.message} />
-                                ))}
-                                
-                                <div className="container mx-auto px-4 py-16">
-                                    <div className="max-w-lg mx-auto">
-                                        {/* Header */}
-                                        <div className="text-center mb-8">
-                                            <div className="flex items-center justify-center mb-6">
-                                                <LogoIcon />
-                                                <h1 className="text-3xl font-bold text-white ml-4">LVL3.ai</h1>
-                                            </div>
-                                            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-1 mb-6 inline-block">
-                                                <span className="text-gray-300 text-sm px-4 py-2">Sales Team Portal</span>
-                                            </div>
-                                        </div>
-
-                                        {/* Main Card */}
-                                        <div className="bg-slate-800/80 backdrop-blur-sm rounded-3xl border border-slate-700/50 p-8 shadow-2xl">
-                                            <div className="text-center mb-8">
-                                                <h2 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-violet-400 bg-clip-text text-transparent mb-4">
-                                                    Sales Incentive
-                                                    <br />
-                                                    Program
-                                                </h2>
-                                                <p className="text-gray-300 text-lg">
-                                                    Get your personal sales link and earn up to <span className="text-green-400 font-bold">${maxEarnings}</span>
-                                                </p>
-                                            </div>
-
-                                            {/* Program Details */}
-                                            <div className="bg-slate-900/50 border border-slate-700/50 rounded-2xl p-6 mb-8">
-                                                <h3 className="text-white font-semibold mb-4 flex items-center">
-                                                    {Target ? <Target className="w-5 h-5 mr-2 text-purple-400" /> : '🎯'}
-                                                    Your Commission Structure
-                                                </h3>
-                                                <div className="space-y-4">
-                                                    <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
-                                                        <span className="text-gray-300">Per qualified signup</span>
-                                                        <span className="text-green-400 font-bold">${payoutPerSignup}</span>
-                                                    </div>
-                                                    <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
-                                                        <span className="text-gray-300">Maximum signups</span>
-                                                        <span className="text-purple-400 font-bold">{maxSignups}</span>
-                                                    </div>
-                                                    <div className="flex items-center justify-between p-3 bg-gradient-to-r from-green-900/30 to-emerald-900/30 border border-green-700/30 rounded-lg">
-                                                        <span className="text-white font-semibold">Maximum earnings</span>
-                                                        <span className="text-green-400 font-bold text-xl">${maxEarnings}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* Requirements */}
-                                            <div className="bg-purple-900/20 border border-purple-700/30 rounded-2xl p-6 mb-8">
-                                                <h3 className="text-white font-semibold mb-3">How It Works:</h3>
-                                                <div className="space-y-3 text-sm text-gray-300">
-                                                    <div className="flex items-start">
-                                                        <div className="w-2 h-2 bg-gradient-to-r from-purple-400 to-violet-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                                                        <span>Get your unique sales link below</span>
-                                                    </div>
-                                                    <div className="flex items-start">
-                                                        <div className="w-2 h-2 bg-gradient-to-r from-purple-400 to-violet-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                                                        <span>Share with prospects via email, social, or direct outreach</span>
-                                                    </div>
-                                                    <div className="flex items-start">
-                                                        <div className="w-2 h-2 bg-gradient-to-r from-purple-400 to-violet-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                                                        <span>Prospects sign up for LVL3.ai early access</span>
-                                                    </div>
-                                                    <div className="flex items-start">
-                                                        <div className="w-2 h-2 bg-gradient-to-r from-purple-400 to-violet-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                                                        <span>Earn $5 for each user who stays active for 3+ months</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* Form */}
-                                            <div className="space-y-6">
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-300 mb-3">
-                                                        Sales Team Email
-                                                    </label>
-                                                    <input
-                                                        type="email"
-                                                        value={email}
-                                                        onChange={(e) => setEmail(e.target.value)}
-                                                        placeholder="Enter your LVL3.ai email"
-                                                        className="w-full px-4 py-4 bg-slate-900/50 border border-slate-600/50 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white placeholder-gray-400"
-                                                        onKeyPress={(e) => e.key === 'Enter' && handleSetup(e)}
-                                                    />
-                                                </div>
-
-                                                <button
-                                                    onClick={handleSetup}
-                                                    className="w-full bg-gradient-to-r from-purple-600 to-violet-600 text-white py-4 px-6 rounded-xl font-semibold hover:from-purple-700 hover:to-violet-700 transition-all duration-300 shadow-lg hover:shadow-purple-500/25"
-                                                >
-                                                    Get My Sales Link →
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        );
-                    }
-
-                    const progressPercentage = ((maxSignups - stats.remainingSlots) / maxSignups) * 100;
-                    const earningsPercentage = (stats.totalEarnings / maxEarnings) * 100;
-
-                    return (
-                        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black">
-                            {notifications.map((notif, index) => (
-                                <Notification key={index} type={notif.type} message={notif.message} />
-                            ))}
-                            
-                            {/* Header */}
-                            <div className="bg-slate-800/50 backdrop-blur-sm border-b border-slate-700/50">
-                                <div className="container mx-auto px-4 py-6">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center">
-                                            <LogoIcon />
-                                            <div className="ml-4">
-                                                <h1 className="text-2xl font-bold text-white">LVL3.ai Sales Portal</h1>
-                                                <p className="text-sm text-gray-400">Sales Team Dashboard</p>
-                                            </div>
-                                        </div>
-                                        <div className="bg-slate-700/50 border border-slate-600/50 rounded-lg px-4 py-2">
-                                            <span className="text-sm text-gray-300">Welcome, {salesPersonName}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="container mx-auto px-4 py-8">
-                                {/* Earnings Overview */}
-                                <div className="bg-gradient-to-r from-green-900/20 via-emerald-900/20 to-green-900/20 border border-green-700/30 p-6 rounded-xl mb-8">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <h2 className="text-2xl font-bold text-white">Earnings Progress</h2>
-                                        {Trophy ? <Trophy className="w-8 h-8 text-yellow-400" /> : '🏆'}
-                                    </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                        <div className="text-center">
-                                            <p className="text-3xl font-bold text-green-400">${stats.totalEarnings}</p>
-                                            <p className="text-sm text-gray-400">Current Earnings</p>
-                                            <div className="w-full bg-slate-700/50 rounded-full h-2 mt-2">
-                                                <div 
-                                                    className="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full transition-all duration-500"
-                                                    style={{ width: `${earningsPercentage}%` }}
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="text-center">
-                                            <p className="text-3xl font-bold text-purple-400">{stats.confirmedSignups}</p>
-                                            <p className="text-sm text-gray-400">Confirmed Signups</p>
-                                            <div className="w-full bg-slate-700/50 rounded-full h-2 mt-2">
-                                                <div 
-                                                    className="bg-gradient-to-r from-purple-500 to-violet-500 h-2 rounded-full transition-all duration-500"
-                                                    style={{ width: `${progressPercentage}%` }}
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="text-center">
-                                            <p className="text-3xl font-bold text-white">{stats.remainingSlots}</p>
-                                            <p className="text-sm text-gray-400">Remaining Slots</p>
-                                            <p className="text-xs text-green-400 mt-1">Worth ${stats.remainingSlots * payoutPerSignup}</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Stats Grid */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                                    <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 p-6 rounded-xl">
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <p className="text-sm text-gray-400">Link Shares</p>
-                                                <p className="text-2xl font-bold text-white">{stats.totalShares}</p>
-                                            </div>
-                                            {Link2 ? <Link2 className="w-8 h-8 text-blue-400" /> : '🔗'}
-                                        </div>
-                                    </div>
-
-                                    <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 p-6 rounded-xl">
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <p className="text-sm text-gray-400">Pending (3mo)</p>
-                                                <p className="text-2xl font-bold text-amber-400">{stats.pendingSignups}</p>
-                                            </div>
-                                            {Clock ? <Clock className="w-8 h-8 text-amber-400" /> : '⏰'}
-                                        </div>
-                                    </div>
-
-                                    <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 p-6 rounded-xl">
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <p className="text-sm text-gray-400">Conversion Rate</p>
-                                                <p className="text-2xl font-bold text-green-400">
-                                                    {stats.totalShares > 0 ? Math.round(((stats.confirmedSignups + stats.pendingSignups) / stats.totalShares) * 100) : 0}%
-                                                </p>
-                                            </div>
-                                            {TrendingUp ? <TrendingUp className="w-8 h-8 text-green-400" /> : '📈'}
-                                        </div>
-                                    </div>
-
-                                    <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 p-6 rounded-xl">
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <p className="text-sm text-gray-400">Potential Value</p>
-                                                <p className="text-2xl font-bold text-purple-400">${maxEarnings}</p>
-                                            </div>
-                                            {Target ? <Target className="w-8 h-8 text-purple-400" /> : '🎯'}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Main Content */}
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                    <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 p-6 rounded-xl">
-                                        <h2 className="text-xl font-semibold text-white mb-4 flex items-center">
-                                            {Link2 ? <Link2 className="w-5 h-5 mr-2 text-purple-400" /> : '🔗'}
-                                            Your Personal Sales Link
-                                        </h2>
-                                        <div className="flex gap-3 mb-4">
-                                            <input
-                                                type="text"
-                                                value={salesLink}
-                                                readOnly
-                                                className="flex-1 px-4 py-3 bg-slate-900/50 border border-slate-600/50 rounded-lg text-gray-300 text-sm"
-                                            />
-                                            <button
-                                                onClick={copyLink}
-                                                className="px-4 py-3 bg-gradient-to-r from-purple-600 to-violet-600 text-white rounded-lg hover:from-purple-700 hover:to-violet-700 transition-all duration-200"
-                                            >
-                                                {Copy ? <Copy size={20} /> : '📋'}
-                                            </button>
-                                        </div>
-                                        <div className="space-y-3 text-sm">
-                                            <div className="p-3 bg-purple-900/20 border border-purple-700/30 rounded-lg">
-                                                <p className="text-purple-300 font-medium mb-1">📧 Email Template:</p>
-                                                <p className="text-gray-300">"Get early access to LVL3.ai - revolutionary AI that thinks faster than you can ask: {salesLink}"</p>
-                                            </div>
-                                            <div className="p-3 bg-blue-900/20 border border-blue-700/30 rounded-lg">
-                                                <p className="text-blue-300 font-medium mb-1">💬 Social Share:</p>
-                                                <p className="text-gray-300">"Exclusive early access to next-gen AI technology. Limited spots available: {salesLink}"</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 p-6 rounded-xl">
-                                        <h2 className="text-xl font-semibold text-white mb-4">Sales Activity</h2>
-                                        <div className="space-y-3">
-                                            {stats.totalShares > 0 ? (
-                                                <div className="p-3 bg-blue-900/20 border border-blue-700/30 rounded-lg">
-                                                    <div className="flex items-center gap-2">
-                                                        {Link2 ? <Link2 size={16} className="text-blue-400" /> : '🔗'}
-                                                        <span className="text-sm text-gray-300">
-                                                            Link shared {stats.totalShares} times
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            ) : null}
-                                            
-                                            {stats.pendingSignups > 0 ? (
-                                                <div className="p-3 bg-amber-900/20 border border-amber-700/30 rounded-lg">
-                                                    <div className="flex items-center gap-2">
-                                                        {Clock ? <Clock size={16} className="text-amber-400" /> : '⏰'}
-                                                        <span className="text-sm text-gray-300">
-                                                            {stats.pendingSignups} signup{stats.pendingSignups !== 1 ? 's' : ''} pending 3-month validation
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            ) : null}
-
-                                            {stats.confirmedSignups > 0 ? (
-                                                <div className="p-3 bg-green-900/20 border border-green-700/30 rounded-lg">
-                                                    <div className="flex items-center gap-2">
-                                                        {DollarSign ? <DollarSign size={16} className="text-green-400" /> : '💰'}
-                                                        <span className="text-sm text-gray-300">
-                                                            ${stats.totalEarnings} earned from {stats.confirmedSignups} confirmed signup{stats.confirmedSignups !== 1 ? 's' : ''}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            ) : null}
-
-                                            {stats.totalShares === 0 ? (
-                                                <div className="text-center py-8 text-gray-500">
-                                                    {Target ? <Target size={48} className="mx-auto mb-3 opacity-30" /> : '🎯'}
-                                                    <p className="text-gray-400">Ready to start earning?</p>
-                                                    <p className="text-sm text-gray-500">Copy your sales link and start sharing!</p>
-                                                </div>
-                                            ) : null}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Progress to Goal */}
-                                <div className="mt-8 bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 p-6 rounded-xl">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <h3 className="text-lg font-semibold text-white">Progress to Maximum Earnings</h3>
-                                        <span className="text-2xl font-bold text-green-400">${stats.totalEarnings} / ${maxEarnings}</span>
-                                    </div>
-                                    <div className="w-full bg-slate-700/50 rounded-full h-4 mb-2">
-                                        <div 
-                                            className="bg-gradient-to-r from-green-500 to-emerald-500 h-4 rounded-full transition-all duration-500"
-                                            style={{ width: `${earningsPercentage}%` }}
-                                        />
-                                    </div>
-                                    <div className="flex justify-between text-sm text-gray-400">
-                                        <span>{stats.confirmedSignups + stats.pendingSignups} / {maxSignups} signups</span>
-                                        <span>{Math.round(earningsPercentage)}% complete</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    );
-                };
-
-                // Render the app
-                ReactDOM.render(<LVL3SalesPortal />, document.getElementById('root'));
-            } catch (error) {
-                // Debug output for errors
-                console.error('Failed to initialize app:', error);
-                document.getElementById('root').innerHTML = `
-                    <div class="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black flex items-center justify-center">
-                        <div class="text-center">
-                            <h1 class="text-2xl font-bold text-white mb-4">LVL3.ai Sales Portal</h1>
-                            <p class="text-gray-300 mb-4">Failed to load the application.</p>
-                            <pre style="color:#fff;background:#222;padding:1em;border-radius:8px;max-width:90vw;overflow-x:auto;">${error && error.message ? error.message : error}</pre>
-                            <button onclick="location.reload()" class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700">
-                                Reload Page
-                            </button>
-                        </div>
+                  {/* details */}
+                  <div className="bg-slate-900/50 border border-slate-700/50 rounded-2xl p-6 mb-8">
+                    <h3 className="text-white font-semibold mb-4 flex items-center">
+                      <Target className="w-5 h-5 mr-2 text-purple-400"/>
+                      Your Commission Structure
+                    </h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+                        <span className="text-gray-300">Per qualified signup</span>
+                        <span className="text-green-400 font-bold">${payoutPerSignup}</span>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+                        <span className="text-gray-300">Maximum signups</span>
+                        <span className="text-purple-400 font-bold">{maxSignups}</span>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-gradient-to-r from-green-900/30 to-emerald-900/30 border border-green-700/30 rounded-lg">
+                        <span className="text-white font-semibold">Maximum earnings</span>
+                        <span className="text-green-400 font-bold text-xl">${maxEarnings}</span>
+                      </div>
                     </div>
-                `;
-            }
-        }
-        // Start the app when the page loads
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initApp);
-        } else {
-            initApp();
-        }
-    </script>
+                  </div>
+
+                  {/* how it works */}
+                  <div className="bg-purple-900/20 border border-purple-700/30 rounded-2xl p-6 mb-8">
+                    <h3 className="text-white font-semibold mb-3">How It Works:</h3>
+                    <div className="space-y-3 text-sm text-gray-300">
+                      {['Get your unique sales link below',
+                        'Share with prospects via email, social, or direct outreach',
+                        'Prospects sign up for LVL3.ai early access',
+                        'Earn $5 for each user who stays active for 3+ months'
+                      ].map((t,idx)=>(
+                        <div key={idx} className="flex items-start">
+                          <div className="w-2 h-2 bg-gradient-to-r from-purple-400 to-violet-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                          <span>{t}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* email form */}
+                  <div className="space-y-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-3">Sales Team Email</label>
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e)=>setEmail(e.target.value)}
+                        placeholder="Enter your LVL3.ai email"
+                        className="w-full px-4 py-4 bg-slate-900/50 border border-slate-600/50 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white placeholder-gray-400"
+                        onKeyPress={(e)=>e.key==='Enter'&&handleSetup(e)}
+                      />
+                    </div>
+                    <button
+                      onClick={handleSetup}
+                      className="w-full bg-gradient-to-r from-purple-600 to-violet-600 text-white py-4 px-6 rounded-xl font-semibold hover:from-purple-700 hover:to-violet-700 transition-all duration-300 shadow-lg hover:shadow-purple-500/25"
+                    >
+                      Get My Sales Link →
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      /* ------------ DASHBOARD ------------ */
+      const progressPct   = ((maxSignups - stats.remainingSlots) / maxSignups) * 100;
+      const earningsPct   = (stats.totalEarnings / maxEarnings) * 100;
+
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black">
+          {notifications.map((n,i)=><Notification key={i}{...n}/>)}
+
+          {/* header */}
+          <div className="bg-slate-800/50 backdrop-blur-sm border-b border-slate-700/50">
+            <div className="container mx-auto px-4 py-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <LogoIcon/>
+                  <div className="ml-4">
+                    <h1 className="text-2xl font-bold text-white">LVL3.ai Sales Portal</h1>
+                    <p className="text-sm text-gray-400">Sales Team Dashboard</p>
+                  </div>
+                </div>
+                <div className="bg-slate-700/50 border border-slate-600/50 rounded-lg px-4 py-2">
+                  <span className="text-sm text-gray-300">Welcome, {salesPersonName}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="container mx-auto px-4 py-8">
+
+            {/* earnings overview */}
+            <div className="bg-gradient-to-r from-green-900/20 via-emerald-900/20 to-green-900/20 border border-green-700/30 p-6 rounded-xl mb-8">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-bold text-white">Earnings Progress</h2>
+                <Trophy className="w-8 h-8 text-yellow-400"/>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <OverviewBlock
+                  label="Current Earnings"
+                  value={`$${stats.totalEarnings}`}
+                  pct={earningsPct}
+                  gradient="from-green-500 to-emerald-500"
+                  textColor="text-green-400"
+                />
+                <OverviewBlock
+                  label="Confirmed Signups"
+                  value={stats.confirmedSignups}
+                  pct={progressPct}
+                  gradient="from-purple-500 to-violet-500"
+                  textColor="text-purple-400"
+                />
+                <div className="text-center">
+                  <p className="text-3xl font-bold text-white">{stats.remainingSlots}</p>
+                  <p className="text-sm text-gray-400">Remaining Slots</p>
+                  <p className="text-xs text-green-400 mt-1">
+                    Worth ${stats.remainingSlots*payoutPerSignup}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* stats grid */}
+            <StatGrid stats={stats} maxEarnings={maxEarnings} payoutPerSignup={payoutPerSignup}/>
+
+            {/* main two-col */}
+            <TwoColumn
+              salesLink={salesLink}
+              copyLink={copyLink}
+              stats={stats}
+              maxSignups={maxSignups}
+              maxEarnings={maxEarnings}
+              earningsPct={earningsPct}
+              progressPct={progressPct}
+            />
+          </div>
+        </div>
+      );
+    };
+
+    /* --- small helper components --- */
+    const OverviewBlock = ({label,value,pct,gradient,textColor}) => (
+      <div className="text-center">
+        <p className={`text-3xl font-bold ${textColor}`}>{value}</p>
+        <p className="text-sm text-gray-400">{label}</p>
+        <div className="w-full bg-slate-700/50 rounded-full h-2 mt-2">
+          <div className={`bg-gradient-to-r ${gradient} h-2 rounded-full transition-all duration-500`}
+               style={{width:`${pct}%`}}></div>
+        </div>
+      </div>
+    );
+
+    const StatBox = ({label,value,icon:Icon,color}) => (
+      <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 p-6 rounded-xl">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm text-gray-400">{label}</p>
+            <p className={`text-2xl font-bold ${color}`}>{value}</p>
+          </div>
+          <Icon className={`w-8 h-8 ${color}`}/>
+        </div>
+      </div>
+    );
+
+    const StatGrid = ({stats,maxEarnings,payoutPerSignup}) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <StatBox label="Link Shares"         value={stats.totalShares}             icon={Link2}      color="text-blue-400"/>
+        <StatBox label="Pending (3mo)"       value={stats.pendingSignups}          icon={Clock}      color="text-amber-400"/>
+        <StatBox label="Conversion Rate"     value={
+          stats.totalShares>0
+            ? `${Math.round(((stats.confirmedSignups+stats.pendingSignups)/stats.totalShares)*100)}%`
+            : '0%'
+        } icon={TrendingUp} color="text-green-400"/>
+        <StatBox label="Potential Value"     value={`$${maxEarnings}`}            icon={Target}     color="text-purple-400"/>
+      </div>
+    );
+
+    const TwoColumn = ({salesLink,copyLink,stats,maxSignups,maxEarnings,earningsPct,progressPct}) => (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* left — link / templates */}
+        <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 p-6 rounded-xl">
+          <h2 className="text-xl font-semibold text-white mb-4 flex items-center">
+            <Link2 className="w-5 h-5 mr-2 text-purple-400"/>
+            Your Personal Sales Link
+          </h2>
+          <div className="flex gap-3 mb-4">
+            <input
+              type="text"
+              value={salesLink}
+              readOnly
+              className="flex-1 px-4 py-3 bg-slate-900/50 border border-slate-600/50 rounded-lg text-gray-300 text-sm"
+            />
+            <button
+              onClick={copyLink}
+              className="px-4 py-3 bg-gradient-to-r from-purple-600 to-violet-600 text-white rounded-lg hover:from-purple-700 hover:to-violet-700 transition-all duration-200"
+            >
+              <Copy size={20}/>
+            </button>
+          </div>
+          <div className="space-y-3 text-sm">
+            <TemplateBox
+              title="📧 Email Template:"
+              color="purple"
+              text={`"Get early access to LVL3.ai – revolutionary AI that thinks faster than you can ask: ${salesLink}"`}
+            />
+            <TemplateBox
+              title="💬 Social Share:"
+              color="blue"
+              text={`"Exclusive early access to next-gen AI technology. Limited spots available: ${salesLink}"`}
+            />
+          </div>
+        </div>
+
+        {/* right — activity */}
+        <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 p-6 rounded-xl">
+          <h2 className="text-xl font-semibold text-white mb-4">Sales Activity</h2>
+          <div className="space-y-3">
+            {stats.totalShares  ? <ActivityBox icon={Link2}  color="blue"   text={`Link shared ${stats.totalShares} times`}/> : null}
+            {stats.pendingSignups ? <ActivityBox icon={Clock}  color="amber" text={`${stats.pendingSignups} signup${stats.pendingSignups!==1?'s':''} pending 3-month validation`}/> : null}
+            {stats.confirmedSignups ? <ActivityBox icon={DollarSign} color="green" text={`$${stats.totalEarnings} earned from ${stats.confirmedSignups} confirmed signup${stats.confirmedSignups!==1?'s':''}`}/> : null}
+
+            {!stats.totalShares && (
+              <div className="text-center py-8 text-gray-500">
+                <Target size={48} className="mx-auto mb-3 opacity-30"/>
+                <p className="text-gray-400">Ready to start earning?</p>
+                <p className="text-sm text-gray-500">Copy your sales link and start sharing!</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* bottom — progress to goal */}
+        <div className="lg:col-span-2 mt-8 bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 p-6 rounded-xl">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-white">Progress to Maximum Earnings</h3>
+            <span className="text-2xl font-bold text-green-400">
+              ${stats.totalEarnings} / ${maxEarnings}
+            </span>
+          </div>
+          <div className="w-full bg-slate-700/50 rounded-full h-4 mb-2">
+            <div className="bg-gradient-to-r from-green-500 to-emerald-500 h-4 rounded-full transition-all duration-500"
+                 style={{width:`${earningsPct}%`}}></div>
+          </div>
+          <div className="flex justify-between text-sm text-gray-400">
+            <span>{stats.confirmedSignups+stats.pendingSignups} / {maxSignups} signups</span>
+            <span>{Math.round(earningsPct)}% complete</span>
+          </div>
+        </div>
+      </div>
+    );
+
+    const TemplateBox = ({title,color,text}) => (
+      <div className={`p-3 bg-${color}-900/20 border border-${color}-700/30 rounded-lg`}>
+        <p className={`text-${color}-300 font-medium mb-1`}>{title}</p>
+        <p className="text-gray-300">{text}</p>
+      </div>
+    );
+
+    const ActivityBox = ({icon:Icon,color,text}) => (
+      <div className={`p-3 bg-${color}-900/20 border border-${color}-700/30 rounded-lg`}>
+        <div className="flex items-center gap-2">
+          <Icon size={16} className={`text-${color}-400`}/>
+          <span className="text-sm text-gray-300">{text}</span>
+        </div>
+      </div>
+    );
+
+    /* mount */
+    ReactDOM.createRoot(document.getElementById('root')).render(<LVL3SalesPortal/>);
+  </script>
 </body>
 </html>
 
+
+# LVL3.ai Sales Portal - Ready for GitHub
