@@ -5,12 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>LVL3.ai Sales Portal</title>
 
-  <!-- Tailwind (via CDN) -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
   <style>
     * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #000000 100%);
+      min-height: 100vh;
+      color: white;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
     }
     
     .gradient-text {
@@ -23,11 +35,86 @@
     .glass-effect {
       background: rgba(30, 41, 59, 0.4);
       backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+    }
+    
+    .card {
+      background: rgba(30, 41, 59, 0.4);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+      transition: all 0.3s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+    
+    .button {
+      background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%);
+      color: white;
+      border: none;
+      padding: 16px 24px;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 16px;
+    }
+    
+    .button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+    }
+    
+    .button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .input {
+      width: 100%;
+      padding: 16px;
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      border-radius: 12px;
+      color: white;
+      font-size: 16px;
+    }
+    
+    .input:focus {
+      outline: none;
+      border-color: #8b5cf6;
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    }
+    
+    .input::placeholder {
+      color: #94a3b8;
     }
     
     .notification {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      padding: 16px;
+      border-radius: 12px;
+      color: white;
+      font-weight: 500;
+      z-index: 1000;
+      max-width: 400px;
       animation: slideIn 0.4s ease-out;
+    }
+    
+    .notification.success {
+      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    
+    .notification.error {
+      background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+      border: 1px solid rgba(239, 68, 68, 0.3);
     }
     
     @keyframes slideIn {
@@ -42,87 +129,127 @@
     }
     
     .progress-bar {
+      width: 100%;
+      height: 12px;
+      background: rgba(148, 163, 184, 0.3);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
       transition: width 0.8s ease-out;
     }
     
-    .card-hover {
-      transition: all 0.3s ease-out;
+    .progress-fill.purple {
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
     }
     
-    .card-hover:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    .grid {
+      display: grid;
+      gap: 24px;
     }
     
-    .button-hover {
-      transition: all 0.3s ease-out;
+    .grid-1 { grid-template-columns: 1fr; }
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-4 { grid-template-columns: repeat(4, 1fr); }
+    
+    @media (max-width: 768px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
     }
     
-    .button-hover:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+    .text-center { text-align: center; }
+    .text-left { text-align: left; }
+    .text-right { text-align: right; }
+    
+    .mb-4 { margin-bottom: 16px; }
+    .mb-6 { margin-bottom: 24px; }
+    .mb-8 { margin-bottom: 32px; }
+    .mb-12 { margin-bottom: 48px; }
+    
+    .mt-4 { margin-top: 16px; }
+    .mt-6 { margin-top: 24px; }
+    .mt-8 { margin-top: 32px; }
+    
+    .py-6 { padding-top: 24px; padding-bottom: 24px; }
+    .py-8 { padding-top: 32px; padding-bottom: 32px; }
+    .py-16 { padding-top: 64px; padding-bottom: 64px; }
+    
+    .px-4 { padding-left: 16px; padding-right: 16px; }
+    .px-6 { padding-left: 24px; padding-right: 24px; }
+    
+    .text-sm { font-size: 14px; }
+    .text-base { font-size: 16px; }
+    .text-lg { font-size: 18px; }
+    .text-xl { font-size: 20px; }
+    .text-2xl { font-size: 24px; }
+    .text-3xl { font-size: 30px; }
+    .text-4xl { font-size: 36px; }
+    .text-5xl { font-size: 48px; }
+    
+    .font-medium { font-weight: 500; }
+    .font-semibold { font-weight: 600; }
+    .font-bold { font-weight: 700; }
+    
+    .text-white { color: white; }
+    .text-gray-300 { color: #d1d5db; }
+    .text-gray-400 { color: #9ca3af; }
+    .text-gray-500 { color: #6b7280; }
+    .text-green-400 { color: #4ade80; }
+    .text-purple-400 { color: #c084fc; }
+    .text-blue-400 { color: #60a5fa; }
+    .text-amber-400 { color: #fbbf24; }
+    
+    .flex { display: flex; }
+    .items-center { align-items: center; }
+    .justify-center { justify-content: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-2 { gap: 8px; }
+    .gap-3 { gap: 12px; }
+    .gap-4 { gap: 16px; }
+    .gap-6 { gap: 24px; }
+    .gap-8 { gap: 32px; }
+    
+    .hidden { display: none; }
+    
+    .logo {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
     
-    .input-focus:focus {
-      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    .logo-bar {
+      width: 32px;
+      height: 6px;
+      border-radius: 3px;
     }
     
-    .pulse-animation {
-      animation: pulse 2s infinite;
-    }
-    
-    @keyframes pulse {
-      0%, 100% {
-        opacity: 1;
-      }
-      50% {
-        opacity: 0.7;
-      }
-    }
-    
-    .fade-in {
-      animation: fadeIn 0.6s ease-out;
-    }
-    
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    
-    .logo-animation {
-      animation: logoFloat 3s ease-in-out infinite;
-    }
-    
-    @keyframes logoFloat {
-      0%, 100% {
-        transform: translateY(0px);
-      }
-      50% {
-        transform: translateY(-5px);
-      }
-    }
+    .logo-bar-1 { background: linear-gradient(135deg, #c084fc 0%, #a855f7 100%); }
+    .logo-bar-2 { background: linear-gradient(135deg, #a855f7 0%, #8b5cf6 100%); }
+    .logo-bar-3 { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
     
     .spinner {
       animation: spin 1s linear infinite;
     }
     
     @keyframes spin {
-      from {
-        transform: rotate(0deg);
-      }
-      to {
-        transform: rotate(360deg);
-      }
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
     }
   </style>
 </head>
-<body class="bg-black min-h-screen">
+<body>
   <div id="root"></div>
 
   <script>
@@ -167,18 +294,10 @@
       if (!container) return;
       
       container.innerHTML = notifications.map(n => `
-        <div class="notification fixed top-6 right-6 p-4 rounded-2xl shadow-2xl z-50 max-w-sm ${
-          n.type === 'success'
-            ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white border border-emerald-500/30'
-            : 'bg-gradient-to-r from-red-600 to-pink-600 text-white border border-red-500/30'
-        }">
+        <div class="notification ${n.type}">
           <div class="flex items-center gap-3">
-            <div class="flex-shrink-0">
-              ${n.type === 'success' ? '✅' : '❌'}
-            </div>
-            <div class="flex-1">
-              <p class="text-sm font-medium">${n.message}</p>
-            </div>
+            <span>${n.type === 'success' ? '✅' : '❌'}</span>
+            <span>${n.message}</span>
           </div>
         </div>
       `).join('');
@@ -197,8 +316,7 @@
       
       // Show loading state
       const button = document.querySelector('button[onclick="handleSetup(event)"]');
-      const originalText = button.innerHTML;
-      button.innerHTML = '<div class="flex items-center justify-center"><div class="spinner rounded-full h-5 w-5 border-b-2 border-white"></div><span class="ml-2">Processing...</span></div>';
+      button.innerHTML = '<div class="flex items-center gap-2"><div class="spinner" style="width: 20px; height: 20px; border: 2px solid white; border-top: transparent; border-radius: 50%;"></div><span>Processing...</span></div>';
       button.disabled = true;
       
       setTimeout(() => {
@@ -249,55 +367,51 @@
 
     function renderSignup() {
       return `
-        <div class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-black relative overflow-hidden">
-          <!-- Background decoration -->
-          <div class="absolute inset-0 bg-gradient-radial from-purple-500/10 to-transparent"></div>
-          
-          <div class="container mx-auto px-4 py-16 relative z-10">
-            <div class="max-w-lg mx-auto">
-
+        <div class="py-16">
+          <div class="container">
+            <div style="max-width: 600px; margin: 0 auto;">
               <!-- header -->
-              <div class="text-center mb-12 fade-in">
+              <div class="text-center mb-12">
                 <div class="flex items-center justify-center mb-8">
-                  <div class="flex flex-col gap-1 logo-animation">
-                    <div class="w-10 h-2 bg-gradient-to-r from-purple-400 to-violet-500 rounded-full"></div>
-                    <div class="w-10 h-2 bg-gradient-to-r from-purple-500 to-violet-600 rounded-full"></div>
-                    <div class="w-10 h-2 bg-gradient-to-r from-purple-600 to-violet-700 rounded-full"></div>
+                  <div class="logo">
+                    <div class="logo-bar logo-bar-1"></div>
+                    <div class="logo-bar logo-bar-2"></div>
+                    <div class="logo-bar logo-bar-3"></div>
                   </div>
                   <h1 class="text-4xl font-bold text-white ml-4">LVL3.ai</h1>
                 </div>
-                <div class="glass-effect bg-slate-800/30 border border-slate-700/50 rounded-2xl p-2 mb-8 inline-block">
-                  <span class="text-gray-300 text-sm px-6 py-2 font-medium">Sales Team Portal</span>
+                <div class="glass-effect" style="display: inline-block; padding: 8px 24px; border-radius: 12px;">
+                  <span class="text-gray-300 text-sm font-medium">Sales Team Portal</span>
                 </div>
               </div>
 
               <!-- card -->
-              <div class="glass-effect bg-slate-800/40 rounded-3xl border border-slate-700/50 p-8 shadow-2xl card-hover">
+              <div class="card">
                 <div class="text-center mb-10">
-                  <h2 class="text-5xl font-bold gradient-text mb-6 leading-tight">
+                  <h2 class="text-5xl font-bold gradient-text mb-6">
                     Sales Incentive<br/>Program
                   </h2>
-                  <p class="text-gray-300 text-xl leading-relaxed">
+                  <p class="text-gray-300 text-xl">
                     Get your personal sales link and earn up to
                     <span class="text-green-400 font-bold text-2xl"> $${maxEarnings.toLocaleString()}</span>
                   </p>
                 </div>
 
                 <!-- details -->
-                <div class="glass-effect bg-slate-900/50 border border-slate-700/50 rounded-2xl p-8 mb-8">
-                  <h3 class="text-white font-semibold mb-6 flex items-center text-lg">
+                <div class="card mb-8">
+                  <h3 class="text-white font-semibold mb-6 text-lg flex items-center">
                     🎯 Your Commission Structure
                   </h3>
-                  <div class="space-y-4">
-                    <div class="flex items-center justify-between p-4 bg-slate-800/50 rounded-xl border border-slate-700/30">
+                  <div style="display: flex; flex-direction: column; gap: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px; background: rgba(30, 41, 59, 0.5); border-radius: 12px; border: 1px solid rgba(148, 163, 184, 0.2);">
                       <span class="text-gray-300 font-medium">Per qualified signup</span>
                       <span class="text-green-400 font-bold text-xl">$${payoutPerSignup}</span>
                     </div>
-                    <div class="flex items-center justify-between p-4 bg-slate-800/50 rounded-xl border border-slate-700/30">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px; background: rgba(30, 41, 59, 0.5); border-radius: 12px; border: 1px solid rgba(148, 163, 184, 0.2);">
                       <span class="text-gray-300 font-medium">Maximum signups</span>
                       <span class="text-purple-400 font-bold text-xl">${maxSignups.toLocaleString()}</span>
                     </div>
-                    <div class="flex items-center justify-between p-4 bg-gradient-to-r from-green-900/30 to-emerald-900/30 border border-green-700/30 rounded-xl">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px; background: linear-gradient(135deg, rgba(5, 150, 105, 0.3) 0%, rgba(16, 185, 129, 0.3) 100%); border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.3);">
                       <span class="text-white font-semibold text-lg">Maximum earnings</span>
                       <span class="text-green-400 font-bold text-2xl">$${maxEarnings.toLocaleString()}</span>
                     </div>
@@ -305,43 +419,44 @@
                 </div>
 
                 <!-- how it works -->
-                <div class="glass-effect bg-purple-900/20 border border-purple-700/30 rounded-2xl p-8 mb-8">
+                <div class="card mb-8" style="background: rgba(147, 51, 234, 0.2); border-color: rgba(147, 51, 234, 0.3);">
                   <h3 class="text-white font-semibold mb-6 text-lg">How It Works:</h3>
-                  <div class="space-y-4 text-gray-300">
-                    <div class="flex items-start">
-                      <div class="w-3 h-3 bg-gradient-to-r from-purple-400 to-violet-500 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                  <div style="display: flex; flex-direction: column; gap: 16px; color: #d1d5db;">
+                    <div style="display: flex; align-items: flex-start;">
+                      <div style="width: 12px; height: 12px; background: linear-gradient(135deg, #c084fc 0%, #a855f7 100%); border-radius: 50%; margin-top: 8px; margin-right: 16px; flex-shrink: 0;"></div>
                       <span class="text-base">Get your unique sales link below</span>
                     </div>
-                    <div class="flex items-start">
-                      <div class="w-3 h-3 bg-gradient-to-r from-purple-400 to-violet-500 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                    <div style="display: flex; align-items: flex-start;">
+                      <div style="width: 12px; height: 12px; background: linear-gradient(135deg, #c084fc 0%, #a855f7 100%); border-radius: 50%; margin-top: 8px; margin-right: 16px; flex-shrink: 0;"></div>
                       <span class="text-base">Share with prospects via email, social, or direct outreach</span>
                     </div>
-                    <div class="flex items-start">
-                      <div class="w-3 h-3 bg-gradient-to-r from-purple-400 to-violet-500 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                    <div style="display: flex; align-items: flex-start;">
+                      <div style="width: 12px; height: 12px; background: linear-gradient(135deg, #c084fc 0%, #a855f7 100%); border-radius: 50%; margin-top: 8px; margin-right: 16px; flex-shrink: 0;"></div>
                       <span class="text-base">Prospects sign up for LVL3.ai early access</span>
                     </div>
-                    <div class="flex items-start">
-                      <div class="w-3 h-3 bg-gradient-to-r from-purple-400 to-violet-500 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                    <div style="display: flex; align-items: flex-start;">
+                      <div style="width: 12px; height: 12px; background: linear-gradient(135deg, #c084fc 0%, #a855f7 100%); border-radius: 50%; margin-top: 8px; margin-right: 16px; flex-shrink: 0;"></div>
                       <span class="text-base">Earn $5 for each user who stays active for 3+ months</span>
                     </div>
                   </div>
                 </div>
 
                 <!-- email form -->
-                <div class="space-y-6">
+                <div style="display: flex; flex-direction: column; gap: 24px;">
                   <div>
                     <label class="block text-sm font-medium text-gray-300 mb-3">Sales Team Email</label>
                     <input
                       id="email-input"
                       type="email"
                       placeholder="Enter your LVL3.ai email"
-                      class="w-full px-6 py-4 bg-slate-900/50 border border-slate-600/50 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white placeholder-gray-400 input-focus transition-all duration-300"
+                      class="input"
                       onkeypress="if(event.key==='Enter') handleSetup(event)"
                     />
                   </div>
                   <button
                     onclick="handleSetup(event)"
-                    class="w-full bg-gradient-to-r from-purple-600 to-violet-600 text-white py-5 px-6 rounded-xl font-semibold text-lg button-hover transition-all duration-300 shadow-lg hover:shadow-purple-500/25"
+                    class="button"
+                    style="width: 100%;"
                   >
                     Get My Sales Link →
                   </button>
@@ -358,196 +473,192 @@
       const earningsPct = (stats.totalEarnings / maxEarnings) * 100;
 
       return `
-        <div class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-black relative overflow-hidden">
-          <!-- Background decoration -->
-          <div class="absolute inset-0 bg-gradient-radial from-purple-500/10 to-transparent"></div>
-          
-          <!-- header -->
-          <div class="glass-effect bg-slate-800/30 border-b border-slate-700/50 relative z-10">
-            <div class="container mx-auto px-4 py-6">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center">
-                  <div class="flex flex-col gap-1 logo-animation">
-                    <div class="w-8 h-1.5 bg-gradient-to-r from-purple-400 to-violet-500 rounded-full"></div>
-                    <div class="w-8 h-1.5 bg-gradient-to-r from-purple-500 to-violet-600 rounded-full"></div>
-                    <div class="w-8 h-1.5 bg-gradient-to-r from-purple-600 to-violet-700 rounded-full"></div>
-                  </div>
-                  <div class="ml-4">
-                    <h1 class="text-2xl font-bold text-white">LVL3.ai Sales Portal</h1>
-                    <p class="text-sm text-gray-400">Sales Team Dashboard</p>
-                  </div>
+        <!-- header -->
+        <div class="glass-effect" style="border-bottom: 1px solid rgba(148, 163, 184, 0.3);">
+          <div class="container py-6">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="logo">
+                  <div class="logo-bar logo-bar-1"></div>
+                  <div class="logo-bar logo-bar-2"></div>
+                  <div class="logo-bar logo-bar-3"></div>
                 </div>
-                <div class="glass-effect bg-slate-700/30 border border-slate-600/50 rounded-xl px-6 py-3">
-                  <span class="text-sm text-gray-300 font-medium">Welcome, ${salesPersonName}</span>
+                <div style="margin-left: 16px;">
+                  <h1 class="text-2xl font-bold text-white">LVL3.ai Sales Portal</h1>
+                  <p class="text-sm text-gray-400">Sales Team Dashboard</p>
                 </div>
+              </div>
+              <div class="glass-effect" style="padding: 12px 24px; border-radius: 12px;">
+                <span class="text-sm text-gray-300 font-medium">Welcome, ${salesPersonName}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container py-8">
+          <!-- earnings overview -->
+          <div class="card" style="background: linear-gradient(135deg, rgba(5, 150, 105, 0.2) 0%, rgba(16, 185, 129, 0.2) 50%, rgba(5, 150, 105, 0.2) 100%); border-color: rgba(16, 185, 129, 0.3);">
+            <div class="flex items-center justify-between mb-6">
+              <h2 class="text-3xl font-bold text-white">Earnings Progress</h2>
+              <span class="text-3xl pulse">🏆</span>
+            </div>
+            <div class="grid grid-3 gap-8">
+              <div class="text-center">
+                <p class="text-4xl font-bold text-green-400 mb-2">$${stats.totalEarnings.toLocaleString()}</p>
+                <p class="text-gray-400 font-medium">Current Earnings</p>
+                <div class="progress-bar mt-4">
+                  <div class="progress-fill" style="width: ${earningsPct}%"></div>
+                </div>
+              </div>
+              <div class="text-center">
+                <p class="text-4xl font-bold text-purple-400 mb-2">${stats.confirmedSignups}</p>
+                <p class="text-gray-400 font-medium">Confirmed Signups</p>
+                <div class="progress-bar mt-4">
+                  <div class="progress-fill purple" style="width: ${progressPct}%"></div>
+                </div>
+              </div>
+              <div class="text-center">
+                <p class="text-4xl font-bold text-white mb-2">${stats.remainingSlots.toLocaleString()}</p>
+                <p class="text-gray-400 font-medium">Remaining Slots</p>
+                <p class="text-sm text-green-400 mt-2 font-medium">
+                  Worth $${(stats.remainingSlots * payoutPerSignup).toLocaleString()}
+                </p>
               </div>
             </div>
           </div>
 
-          <div class="container mx-auto px-4 py-8 relative z-10">
+          <!-- stats grid -->
+          <div class="grid grid-4 gap-6 mb-8">
+            <div class="card">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm text-gray-400 font-medium">Link Shares</p>
+                  <p class="text-3xl font-bold text-blue-400">${stats.totalShares.toLocaleString()}</p>
+                </div>
+                <span class="text-3xl">🔗</span>
+              </div>
+            </div>
+            <div class="card">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm text-gray-400 font-medium">Pending (3mo)</p>
+                  <p class="text-3xl font-bold text-amber-400">${stats.pendingSignups}</p>
+                </div>
+                <span class="text-3xl">⏰</span>
+              </div>
+            </div>
+            <div class="card">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm text-gray-400 font-medium">Conversion Rate</p>
+                  <p class="text-3xl font-bold text-green-400">${
+                    stats.totalShares > 0
+                      ? Math.round(((stats.confirmedSignups + stats.pendingSignups) / stats.totalShares) * 100)
+                      : 0
+                  }%</p>
+                </div>
+                <span class="text-3xl">📈</span>
+              </div>
+            </div>
+            <div class="card">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm text-gray-400 font-medium">Potential Value</p>
+                  <p class="text-3xl font-bold text-purple-400">$${maxEarnings.toLocaleString()}</p>
+                </div>
+                <span class="text-3xl">🎯</span>
+              </div>
+            </div>
+          </div>
 
-            <!-- earnings overview -->
-            <div class="glass-effect bg-gradient-to-r from-green-900/20 via-emerald-900/20 to-green-900/20 border border-green-700/30 p-8 rounded-2xl mb-8 card-hover">
+          <!-- main two-col -->
+          <div class="grid grid-2 gap-8">
+            <!-- left — link / templates -->
+            <div class="card">
+              <h2 class="text-2xl font-semibold text-white mb-6 flex items-center">
+                🔗 Your Personal Sales Link
+              </h2>
+              <div class="flex gap-3 mb-6">
+                <input
+                  type="text"
+                  value="${salesLink}"
+                  readonly
+                  class="input"
+                  style="font-family: monospace;"
+                />
+                <button
+                  onclick="copyLink()"
+                  class="button"
+                  style="padding: 16px;"
+                >
+                  📋
+                </button>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 16px;">
+                <div class="card" style="background: rgba(147, 51, 234, 0.2); border-color: rgba(147, 51, 234, 0.3);">
+                  <p class="text-purple-300 font-medium mb-2">📧 Email Template:</p>
+                  <p class="text-gray-300">"Get early access to LVL3.ai – revolutionary AI that thinks faster than you can ask: ${salesLink}"</p>
+                </div>
+                <div class="card" style="background: rgba(59, 130, 246, 0.2); border-color: rgba(59, 130, 246, 0.3);">
+                  <p class="text-blue-300 font-medium mb-2">💬 Social Share:</p>
+                  <p class="text-gray-300">"Exclusive early access to next-gen AI technology. Limited spots available: ${salesLink}"</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- right — activity -->
+            <div class="card">
+              <h2 class="text-2xl font-semibold text-white mb-6">Sales Activity</h2>
+              <div style="display: flex; flex-direction: column; gap: 16px;">
+                ${stats.totalShares ? `
+                  <div class="card" style="background: rgba(59, 130, 246, 0.2); border-color: rgba(59, 130, 246, 0.3);">
+                    <div class="flex items-center gap-3">
+                      <span class="text-blue-400 text-xl">🔗</span>
+                      <span class="text-gray-300 font-medium">Link shared ${stats.totalShares.toLocaleString()} times</span>
+                    </div>
+                  </div>
+                ` : ''}
+                ${stats.pendingSignups ? `
+                  <div class="card" style="background: rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.3);">
+                    <div class="flex items-center gap-3">
+                      <span class="text-amber-400 text-xl">⏰</span>
+                      <span class="text-gray-300 font-medium">${stats.pendingSignups} signup${stats.pendingSignups !== 1 ? 's' : ''} pending 3-month validation</span>
+                    </div>
+                  </div>
+                ` : ''}
+                ${stats.confirmedSignups ? `
+                  <div class="card" style="background: rgba(5, 150, 105, 0.2); border-color: rgba(5, 150, 105, 0.3);">
+                    <div class="flex items-center gap-3">
+                      <span class="text-green-400 text-xl">💰</span>
+                      <span class="text-gray-300 font-medium">$${stats.totalEarnings.toLocaleString()} earned from ${stats.confirmedSignups} confirmed signup${stats.confirmedSignups !== 1 ? 's' : ''}</span>
+                    </div>
+                  </div>
+                ` : ''}
+
+                ${!stats.totalShares ? `
+                  <div class="text-center py-12 text-gray-500">
+                    <span class="text-6xl opacity-30 mb-4 block">🎯</span>
+                    <p class="text-gray-400 text-lg font-medium mb-2">Ready to start earning?</p>
+                    <p class="text-gray-500">Copy your sales link and start sharing!</p>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+
+            <!-- bottom — progress to goal -->
+            <div class="card" style="grid-column: 1 / -1;">
               <div class="flex items-center justify-between mb-6">
-                <h2 class="text-3xl font-bold text-white">Earnings Progress</h2>
-                <span class="text-3xl pulse-animation">🏆</span>
+                <h3 class="text-xl font-semibold text-white">Progress to Maximum Earnings</h3>
+                <span class="text-3xl font-bold text-green-400">
+                  $${stats.totalEarnings.toLocaleString()} / $${maxEarnings.toLocaleString()}
+                </span>
               </div>
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="text-center">
-                  <p class="text-4xl font-bold text-green-400 mb-2">$${stats.totalEarnings.toLocaleString()}</p>
-                  <p class="text-gray-400 font-medium">Current Earnings</p>
-                  <div class="w-full bg-slate-700/50 rounded-full h-3 mt-4">
-                    <div class="bg-gradient-to-r from-green-500 to-emerald-500 h-3 rounded-full progress-bar" style="width: ${earningsPct}%"></div>
-                  </div>
-                </div>
-                <div class="text-center">
-                  <p class="text-4xl font-bold text-purple-400 mb-2">${stats.confirmedSignups}</p>
-                  <p class="text-gray-400 font-medium">Confirmed Signups</p>
-                  <div class="w-full bg-slate-700/50 rounded-full h-3 mt-4">
-                    <div class="bg-gradient-to-r from-purple-500 to-violet-500 h-3 rounded-full progress-bar" style="width: ${progressPct}%"></div>
-                  </div>
-                </div>
-                <div class="text-center">
-                  <p class="text-4xl font-bold text-white mb-2">${stats.remainingSlots.toLocaleString()}</p>
-                  <p class="text-gray-400 font-medium">Remaining Slots</p>
-                  <p class="text-sm text-green-400 mt-2 font-medium">
-                    Worth $${(stats.remainingSlots * payoutPerSignup).toLocaleString()}
-                  </p>
-                </div>
+              <div class="progress-bar" style="height: 20px; margin-bottom: 16px;">
+                <div class="progress-fill" style="width: ${earningsPct}%"></div>
               </div>
-            </div>
-
-            <!-- stats grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <div class="glass-effect bg-slate-800/40 border border-slate-700/50 p-6 rounded-2xl card-hover">
-                <div class="flex items-center justify-between">
-                  <div>
-                    <p class="text-sm text-gray-400 font-medium">Link Shares</p>
-                    <p class="text-3xl font-bold text-blue-400">${stats.totalShares.toLocaleString()}</p>
-                  </div>
-                  <span class="text-3xl">🔗</span>
-                </div>
-              </div>
-              <div class="glass-effect bg-slate-800/40 border border-slate-700/50 p-6 rounded-2xl card-hover">
-                <div class="flex items-center justify-between">
-                  <div>
-                    <p class="text-sm text-gray-400 font-medium">Pending (3mo)</p>
-                    <p class="text-3xl font-bold text-amber-400">${stats.pendingSignups}</p>
-                  </div>
-                  <span class="text-3xl">⏰</span>
-                </div>
-              </div>
-              <div class="glass-effect bg-slate-800/40 border border-slate-700/50 p-6 rounded-2xl card-hover">
-                <div class="flex items-center justify-between">
-                  <div>
-                    <p class="text-sm text-gray-400 font-medium">Conversion Rate</p>
-                    <p class="text-3xl font-bold text-green-400">${
-                      stats.totalShares > 0
-                        ? Math.round(((stats.confirmedSignups + stats.pendingSignups) / stats.totalShares) * 100)
-                        : 0
-                    }%</p>
-                  </div>
-                  <span class="text-3xl">📈</span>
-                </div>
-              </div>
-              <div class="glass-effect bg-slate-800/40 border border-slate-700/50 p-6 rounded-2xl card-hover">
-                <div class="flex items-center justify-between">
-                  <div>
-                    <p class="text-sm text-gray-400 font-medium">Potential Value</p>
-                    <p class="text-3xl font-bold text-purple-400">$${maxEarnings.toLocaleString()}</p>
-                  </div>
-                  <span class="text-3xl">🎯</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- main two-col -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <!-- left — link / templates -->
-              <div class="glass-effect bg-slate-800/40 border border-slate-700/50 p-8 rounded-2xl card-hover">
-                <h2 class="text-2xl font-semibold text-white mb-6 flex items-center">
-                  🔗 Your Personal Sales Link
-                </h2>
-                <div class="flex gap-3 mb-6">
-                  <input
-                    type="text"
-                    value="${salesLink}"
-                    readonly
-                    class="flex-1 px-4 py-4 bg-slate-900/50 border border-slate-600/50 rounded-xl text-gray-300 text-sm font-mono"
-                  />
-                  <button
-                    onclick="copyLink()"
-                    class="px-6 py-4 bg-gradient-to-r from-purple-600 to-violet-600 text-white rounded-xl hover:from-purple-700 hover:to-violet-700 transition-all duration-200 button-hover"
-                  >
-                    📋
-                  </button>
-                </div>
-                <div class="space-y-4 text-sm">
-                  <div class="glass-effect p-4 bg-purple-900/20 border border-purple-700/30 rounded-xl">
-                    <p class="text-purple-300 font-medium mb-2">📧 Email Template:</p>
-                    <p class="text-gray-300 leading-relaxed">"Get early access to LVL3.ai – revolutionary AI that thinks faster than you can ask: ${salesLink}"</p>
-                  </div>
-                  <div class="glass-effect p-4 bg-blue-900/20 border border-blue-700/30 rounded-xl">
-                    <p class="text-blue-300 font-medium mb-2">💬 Social Share:</p>
-                    <p class="text-gray-300 leading-relaxed">"Exclusive early access to next-gen AI technology. Limited spots available: ${salesLink}"</p>
-                  </div>
-                </div>
-              </div>
-
-              <!-- right — activity -->
-              <div class="glass-effect bg-slate-800/40 border border-slate-700/50 p-8 rounded-2xl card-hover">
-                <h2 class="text-2xl font-semibold text-white mb-6">Sales Activity</h2>
-                <div class="space-y-4">
-                  ${stats.totalShares ? `
-                    <div class="glass-effect p-4 bg-blue-900/20 border border-blue-700/30 rounded-xl">
-                      <div class="flex items-center gap-3">
-                        <span class="text-blue-400 text-xl">🔗</span>
-                        <span class="text-gray-300 font-medium">Link shared ${stats.totalShares.toLocaleString()} times</span>
-                      </div>
-                    </div>
-                  ` : ''}
-                  ${stats.pendingSignups ? `
-                    <div class="glass-effect p-4 bg-amber-900/20 border border-amber-700/30 rounded-xl">
-                      <div class="flex items-center gap-3">
-                        <span class="text-amber-400 text-xl">⏰</span>
-                        <span class="text-gray-300 font-medium">${stats.pendingSignups} signup${stats.pendingSignups !== 1 ? 's' : ''} pending 3-month validation</span>
-                      </div>
-                    </div>
-                  ` : ''}
-                  ${stats.confirmedSignups ? `
-                    <div class="glass-effect p-4 bg-green-900/20 border border-green-700/30 rounded-xl">
-                      <div class="flex items-center gap-3">
-                        <span class="text-green-400 text-xl">💰</span>
-                        <span class="text-gray-300 font-medium">$${stats.totalEarnings.toLocaleString()} earned from ${stats.confirmedSignups} confirmed signup${stats.confirmedSignups !== 1 ? 's' : ''}</span>
-                      </div>
-                    </div>
-                  ` : ''}
-
-                  ${!stats.totalShares ? `
-                    <div class="text-center py-12 text-gray-500">
-                      <span class="text-6xl opacity-30 mb-4 block">🎯</span>
-                      <p class="text-gray-400 text-lg font-medium mb-2">Ready to start earning?</p>
-                      <p class="text-gray-500">Copy your sales link and start sharing!</p>
-                    </div>
-                  ` : ''}
-                </div>
-              </div>
-
-              <!-- bottom — progress to goal -->
-              <div class="lg:col-span-2 mt-8 glass-effect bg-slate-800/40 border border-slate-700/50 p-8 rounded-2xl card-hover">
-                <div class="flex items-center justify-between mb-6">
-                  <h3 class="text-xl font-semibold text-white">Progress to Maximum Earnings</h3>
-                  <span class="text-3xl font-bold text-green-400">
-                    $${stats.totalEarnings.toLocaleString()} / $${maxEarnings.toLocaleString()}
-                  </span>
-                </div>
-                <div class="w-full bg-slate-700/50 rounded-full h-5 mb-4">
-                  <div class="bg-gradient-to-r from-green-500 to-emerald-500 h-5 rounded-full progress-bar" style="width: ${earningsPct}%"></div>
-                </div>
-                <div class="flex justify-between text-sm text-gray-400 font-medium">
-                  <span>${stats.confirmedSignups + stats.pendingSignups} / ${maxSignups.toLocaleString()} signups</span>
-                  <span>${Math.round(earningsPct)}% complete</span>
-                </div>
+              <div class="flex justify-between text-sm text-gray-400 font-medium">
+                <span>${stats.confirmedSignups + stats.pendingSignups} / ${maxSignups.toLocaleString()} signups</span>
+                <span>${Math.round(earningsPct)}% complete</span>
               </div>
             </div>
           </div>
